@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Box, 
   Grid, 
@@ -10,16 +10,24 @@ import {
   useMediaQuery
 } from '@mui/material';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Outlet } from 'react-router-dom';
 import { store } from './store';
 import ProductCard from './components/ProductCard';
 import ProductDetails from './pages/ProductDetails';
 import CategoryFilter from './components/CategoryFilter';
 import Banner from './components/Banner';
 import Layout from './components/Layout';
-import { products } from './data/products';
+// import { products } from './data/products';
 import { Product } from './types';
 import Auth from './pages/Auth';
+import Checkout from './pages/Checkout';
+import { getProducts } from './services/productService';
+import CartReview from './pages/CartReview';
+import OrderDetails from './pages/OrderDetails';
+import AdminDashboard from './pages/AdminDashboard';
+import { AuthProvider } from './contexts/AuthContext';
+import AdminLogin from './pages/AdminLogin';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 const HomePage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -27,15 +35,16 @@ const HomePage: React.FC = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [showPromotions, setShowPromotions] = useState(false);
   const [priceSort, setPriceSort] = useState<'asc' | 'desc'>('asc');
+  const [products, setProducts] = useState<Product[]>([]);
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
 
   const categories = useMemo(() => {
-    const uniqueCategories = new Set(products.map(product => product.category));
-    return Array.from(uniqueCategories);
-  }, []);
+    const uniqueCategories = new Set(products.map((product: Product) => product.category));
+    return Array.from(uniqueCategories) as string[];
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
     // Commencer avec tous les produits
@@ -66,7 +75,7 @@ const HomePage: React.FC = () => {
     });
 
     return filtered;
-  }, [selectedCategory, priceRange, showPromotions, priceSort]);
+  }, [selectedCategory, priceRange, showPromotions, priceSort, products]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -88,10 +97,24 @@ const HomePage: React.FC = () => {
   };
 
   const handleViewDetails = (product: Product) => {
-    navigate(`/product/${product.id}`);
+    navigate(`/products/${product._id}`);
   };
 
   const drawerWidth = 250;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        console.log("response")
+        console.log(response);
+        setProducts(response);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <Layout showMenuButton onMenuClick={() => setDrawerOpen(!drawerOpen)}>
@@ -155,7 +178,7 @@ const HomePage: React.FC = () => {
             </Box>
             <Grid container spacing={3}>
               {filteredProducts.map((product) => (
-                <Grid item xs={12} sm={6} md={4} key={product.id}>
+                <Grid item xs={12} sm={6} md={4} key={product._id}>
                   <ProductCard 
                     product={product} 
                     onViewDetails={handleViewDetails}
@@ -173,23 +196,36 @@ const HomePage: React.FC = () => {
 function App() {
   return (
     <Provider store={store}>
-      <Router>
-        <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#ffffff' }}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/product/:id" element={
-              <Layout>
-                <ProductDetails />
-              </Layout>
-            } />
-            <Route path="/auth" element={
-              <Layout>
-                <Auth />
-              </Layout>
-            } />
-          </Routes>
-        </Box>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#ffffff' }}>
+            <Routes>
+              <Route path="/" element={<Layout><Outlet /></Layout>}>
+                <Route index element={<HomePage />} />
+                <Route path="/products/:id" element={<ProductDetails />} />
+                <Route path="/checkout/review" element={<CartReview />} />
+                <Route path="/order/:id" element={<OrderDetails />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin" element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
+              </Route>
+              <Route path="/auth" element={
+                <Layout>
+                  <Auth />
+                </Layout>
+              } />
+              <Route path="/checkout/info" element={
+                <Layout>
+                  <Checkout />
+                </Layout>
+              } />
+            </Routes>
+          </Box>
+        </Router>
+      </AuthProvider>
     </Provider>
   );
 }

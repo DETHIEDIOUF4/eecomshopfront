@@ -1,48 +1,99 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
-  Box,
   Container,
-  Typography,
   Grid,
-  Chip,
-  Divider,
-  Paper,
+  Typography,
+  Box,
   Button,
-  TextField,
+  Paper,
+  Divider,
+  CircularProgress,
+  Alert,
   IconButton,
-  useTheme,
-  useMediaQuery
+  Chip,
+  TextField,
+  InputAdornment
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
-import { products } from '../data/products';
+import { getProductById } from '../services/productService';
+import { Product } from '../types';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import ImageGallery from 'react-image-gallery';
 import "react-image-gallery/styles/css/image-gallery.css";
 import AddToCartNotification from '../components/AddToCartNotification';
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  const product = products.find(p => p.id === Number(id));
+  React.useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        if (!id) return;
+        const response = await getProductById(id);
+        setProduct(response);
+        setError(null);
+      } catch (err) {
+        setError('Erreur lors du chargement du produit');
+        console.error('Error fetching product:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!product) {
+    fetchProduct();
+  }, [id]);
+
+  const handleQuantityChange = (value: number) => {
+    if (value >= 1) {
+      setQuantity(value);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (product) {
+      setIsAddingToCart(true);
+      setShowNotification(true);
+
+      try {
+        // Simuler un délai de chargement
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        dispatch(addToCart({
+          product,
+          quantity
+        }));
+
+        setIsAddingToCart(false);
+      } catch (error) {
+        console.error('Erreur lors de l\'ajout au panier:', error);
+        setIsAddingToCart(false);
+        setShowNotification(false);
+      }
+    }
+  };
+
+  if (loading) {
     return (
-      <Container sx={{ mt: 4 }}>
-        <Typography variant="h5">Produit non trouvé</Typography>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')}>
-          Retour aux produits
-        </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Alert severity="error">{error || 'Produit non trouvé'}</Alert>
       </Container>
     );
   }
@@ -52,156 +103,112 @@ const ProductDetails: React.FC = () => {
     thumbnail: image
   }));
 
-  const handleQuantityChange = (value: number) => {
-    if (value >= 1) {
-      setQuantity(value);
-    }
-  };
-
-  const handleAddToCart = async () => {
-    setIsAddingToCart(true);
-    setShowNotification(true);
-    
-    // Simuler un délai de chargement
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    dispatch(addToCart({
-      product,
-      quantity
-    }));
-    
-    setIsAddingToCart(false);
-  };
-
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={() => navigate('/')}
-        sx={{ mb: 3 }}
-      >
-        Retour aux produits
-      </Button>
-
-      <Grid container spacing={3}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
           <Paper elevation={0} sx={{ p: 2 }}>
             <ImageGallery
               items={images}
               showPlayButton={false}
-              showFullscreenButton={!isMobile}
-              showThumbnails={!isMobile}
-              thumbnailPosition={isMobile ? 'bottom' : 'left'}
+              showFullscreenButton={true}
+              showThumbnails={true}
+              thumbnailPosition="left"
             />
           </Paper>
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Box sx={{ p: 2 }}>
-            <Typography variant="h4" gutterBottom>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
               {product.name}
             </Typography>
-            
-            <Typography variant="h4" color="primary" gutterBottom>
-              {product.price.toLocaleString()} FCFA
+            <Typography variant="h5" color="primary" gutterBottom>
+              {product.price.toLocaleString('fr-FR')} FCFA
             </Typography>
-            
+            <Typography variant="body1" paragraph>
+              {product.description}
+            </Typography>
             <Typography variant="body1" paragraph>
               {product.detailedDescription}
             </Typography>
 
             <Divider sx={{ my: 2 }} />
 
-            {product.ingredients && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Ingrédients
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {product.ingredients.map((ingredient, index) => (
-                    <Chip
-                      key={index}
-                      label={ingredient}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ))}
-                </Box>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Ingrédients
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {product.ingredients.map((ingredient, index) => (
+                  <Chip
+                    key={index}
+                    label={ingredient}
+                    color="primary"
+                    variant="outlined"
+                  />
+                ))}
               </Box>
-            )}
+            </Box>
 
-            {product.allergens && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Allergènes
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {product.allergens.map((allergen, index) => (
-                    <Chip
-                      key={index}
-                      label={allergen}
-                      color="error"
-                      variant="outlined"
-                    />
-                  ))}
-                </Box>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Allergènes
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {product.allergens.map((allergen, index) => (
+                  <Chip
+                    key={index}
+                    label={allergen}
+                    color="error"
+                    variant="outlined"
+                  />
+                ))}
               </Box>
-            )}
+            </Box>
 
-            {product.nutritionalInfo && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Informations nutritionnelles
-                </Typography>
-                <Grid container spacing={2}>
-                  {product.nutritionalInfo.calories && (
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="subtitle2">Calories</Typography>
-                        <Typography variant="h6">{product.nutritionalInfo.calories} kcal</Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                  {product.nutritionalInfo.proteins && (
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="subtitle2">Protéines</Typography>
-                        <Typography variant="h6">{product.nutritionalInfo.proteins}g</Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                  {product.nutritionalInfo.carbohydrates && (
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="subtitle2">Glucides</Typography>
-                        <Typography variant="h6">{product.nutritionalInfo.carbohydrates}g</Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                  {product.nutritionalInfo.fats && (
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="subtitle2">Lipides</Typography>
-                        <Typography variant="h6">{product.nutritionalInfo.fats}g</Typography>
-                      </Paper>
-                    </Grid>
-                  )}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Informations nutritionnelles
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Paper sx={{ p: 1, textAlign: 'center' }}>
+                    <Typography variant="subtitle2">Calories</Typography>
+                    <Typography variant="h6">{product.nutritionalInfo.calories} kcal</Typography>
+                  </Paper>
                 </Grid>
-              </Box>
-            )}
+                <Grid item xs={6}>
+                  <Paper sx={{ p: 1, textAlign: 'center' }}>
+                    <Typography variant="subtitle2">Protéines</Typography>
+                    <Typography variant="h6">{product.nutritionalInfo.proteins}g</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={6}>
+                  <Paper sx={{ p: 1, textAlign: 'center' }}>
+                    <Typography variant="subtitle2">Glucides</Typography>
+                    <Typography variant="h6">{product.nutritionalInfo.carbohydrates}g</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={6}>
+                  <Paper sx={{ p: 1, textAlign: 'center' }}>
+                    <Typography variant="subtitle2">Lipides</Typography>
+                    <Typography variant="h6">{product.nutritionalInfo.fats}g</Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Box>
 
-            {product.preparationTime && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Temps de préparation
-                </Typography>
-                <Chip
-                  label={product.preparationTime}
-                  color="primary"
-                  variant="filled"
-                />
-              </Box>
-            )}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Temps de préparation
+              </Typography>
+              <Chip
+                label={`${product.preparationTime} minutes`}
+                color="primary"
+                variant="filled"
+              />
+            </Box>
 
             <Box sx={{ mt: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -240,17 +247,19 @@ const ProductDetails: React.FC = () => {
                 color="primary"
                 size="large"
                 onClick={handleAddToCart}
-                disabled={isAddingToCart}
+                disabled={product.stock === 0 || isAddingToCart}
                 sx={{ 
                   flexGrow: 1,
                   py: 1.5,
                   fontSize: '1.1rem'
                 }}
               >
-                {isAddingToCart ? 'Ajout en cours...' : `Ajouter au panier (${quantity * product.price} FCFA)`}
+                {product.stock > 0 
+                  ? `Valider (${(quantity * product.price).toLocaleString('fr-FR')} FCFA)`
+                  : 'Rupture de stock'}
               </Button>
             </Box>
-          </Box>
+          </Paper>
         </Grid>
       </Grid>
 
