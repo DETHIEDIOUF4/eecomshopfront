@@ -1,27 +1,4 @@
 [build]
   command = "npm ci --legacy-peer-deps && npm run build"
   publish = "build" # ou "dist" selon ton projet
-  environment = { NODE_VERSION = "20", NPM_FLAGS = "--legacy-peer-deps" }
-
-[build.environment]
-  NODE_ENV = "production"
-
-[dev]
-  framework = "vite" # ou "react" ou "next" si tu utilises vite, react ou next.js
-
-[plugins]
-  [[plugins]]
-    package = "@netlify/plugin-cache-core" # Cache pour accélérer les builds
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+ 
