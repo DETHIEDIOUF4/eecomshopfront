@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '../config';
-import { Product } from './productService';
+import { productService } from './productService';
+import { Product } from '../types';
 
 const getAuthToken = () => {
   const userInfo = localStorage.getItem('userInfo');
@@ -129,5 +130,14 @@ export const payOrder = async (id: string, paymentResult: {
 
 export const deliverOrder = async (id: string) => {
   const response = await axiosInstance.put(`/orders/${id}/deliver`);
+  return response.data;
+};
+
+export const getAllOrders = async () => {
+  const response = await axiosInstance.get('/orders',{
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
   return response.data;
 }; 

@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
-import { getProductById } from '../services/productService';
+import { productService } from '../services/productService';
 import { Product } from '../types';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -39,7 +39,7 @@ const ProductDetails: React.FC = () => {
     const fetchProduct = async () => {
       try {
         if (!id) return;
-        const response = await getProductById(id);
+        const response = await productService.getProduct(id);
         setProduct(response);
         setError(null);
       } catch (err) {

@@ -22,6 +22,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
+      // axios.get('https://hellogassy-backend.onrender.com/api/users/profile', {
+      
       axios.get('https://hellogassy-backend.onrender.com/api/users/profile', {
         headers: { Authorization: `Bearer ${token}` }
       })

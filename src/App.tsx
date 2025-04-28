@@ -21,7 +21,7 @@ import Layout from './components/Layout';
 import { Product } from './types';
 import Auth from './pages/Auth';
 import Checkout from './pages/Checkout';
-import { getProducts } from './services/productService';
+import { productService } from './services/productService';
 import CartReview from './pages/CartReview';
 import OrderDetails from './pages/OrderDetails';
 import AdminDashboard from './pages/AdminDashboard';
@@ -105,7 +105,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await getProducts();
+        const response = await productService.getAllProducts();
         console.log("response")
         console.log(response);
         setProducts(response);

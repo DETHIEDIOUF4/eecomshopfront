@@ -13,7 +13,7 @@ import {
   Alert,
   Rating
 } from '@mui/material';
-import { getProducts } from '../services/productService';
+import { productService } from '../services/productService';
 import { Product } from '../types';
 import CategoryFilter from '../components/CategoryFilter';
 import PriceFilter from '../components/PriceFilter';
@@ -30,7 +30,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await getProducts();
+        const response = await productService.getAllProducts();
         setProducts(response.data.products);
         setError(null);
         setCategories(response.data.categories);

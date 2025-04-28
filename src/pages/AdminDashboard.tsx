@@ -1,72 +1,154 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Grid, Paper, Typography, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { Dashboard, ShoppingCart, People, Inventory } from '@mui/icons-material';
-import OrdersList from '../components/admin/OrdersList';
-import ProductsList from '../components/admin/ProductsList';
-import UsersList from '../components/admin/UsersList';
+import React, { useState } from 'react';
+import { Layout, Menu, theme, Drawer, Button } from 'antd';
+import { MenuOutlined, ShoppingCartOutlined, AppstoreOutlined, OrderedListOutlined } from '@ant-design/icons';
+import CategoryManagement from '../components/admin/CategoryManagement';
+import ProductManagement from '../components/admin/ProductManagement';
+import OrderManagement from '../components/admin/OrderManagement';
 
-const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('orders');
-  const { user } = useAuth();
-  const navigate = useNavigate();
+const { Header, Content } = Layout;
 
-  useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      navigate('/');
-    }
-    
-  }, [user, navigate]);
+const AdminDashboard: React.FC = () => {
+    const [selectedMenu, setSelectedMenu] = useState('products');
+    const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'orders':
-        return <OrdersList />;
-      case 'products':
-        return <ProductsList />;
-      case 'users':
-        return <UsersList />;
-      default:
-        return <OrdersList />;
-    }
-  };
+    const menuItems = [
+        {
+            key: 'products',
+            label: 'Gestion des produits',
+            icon: <ShoppingCartOutlined />
+        },
+        {
+            key: 'categories',
+            label: 'Gestion des catégories',
+            icon: <AppstoreOutlined />
+        },
+        {
+            key: 'orders',
+            label: 'Gestion des commandes',
+            icon: <OrderedListOutlined />
+        },
+    ];
 
-  return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={3}>
-          <Paper sx={{ p: 2 }}>
-            <List>
-              <ListItem button onClick={() => setActiveTab('orders')}>
-                <ListItemIcon>
-                  <ShoppingCart />
-                </ListItemIcon>
-                <ListItemText primary="Commandes" />
-              </ListItem>
-              <ListItem button onClick={() => setActiveTab('products')}>
-                <ListItemIcon>
-                  <Inventory />
-                </ListItemIcon>
-                <ListItemText primary="Produits" />
-              </ListItem>
-              <ListItem button onClick={() => setActiveTab('users')}>
-                <ListItemIcon>
-                  <People />
-                </ListItemIcon>
-                <ListItemText primary="Utilisateurs" />
-              </ListItem>
-            </List>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={9}>
-          <Paper sx={{ p: 2 }}>
-            {renderContent()}
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
-  );
+    const renderContent = () => {
+        switch (selectedMenu) {
+            case 'products':
+                return <ProductManagement />;
+            case 'categories':
+                return <CategoryManagement />;
+            case 'orders':
+                return <OrderManagement />;
+            default:
+                return <ProductManagement />;
+        }
+    };
+
+    return (
+        <Layout style={{ minHeight: '100vh' }}>
+            <Header style={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                position: 'fixed',
+                width: '100%',
+                zIndex: 1,
+                padding: '0 24px'
+            }}>
+                <Button
+                    type="text"
+                    icon={<MenuOutlined />}
+                    onClick={() => setMobileMenuVisible(true)}
+                    style={{ display: 'block' }}
+                />
+                <h1 style={{ 
+                    color: 'white', 
+                    margin: 0,
+                    fontSize: '1.5rem',
+                    marginLeft: 16
+                }}>
+                    Tableau de bord
+                </h1>
+            </Header>
+            <Layout style={{ marginTop: 64 }}>
+                <Drawer
+                    title="Menu"
+                    placement="left"
+                    onClose={() => setMobileMenuVisible(false)}
+                    open={mobileMenuVisible}
+                    width={250}
+                    bodyStyle={{ padding: 0 }}
+                    headerStyle={{ 
+                        background: '#001529',
+                        color: 'white',
+                        border: 'none'
+                    }}
+                >
+                    <Menu
+                        mode="inline"
+                        selectedKeys={[selectedMenu]}
+                        items={menuItems}
+                        onClick={({ key }) => {
+                            setSelectedMenu(key);
+                            setMobileMenuVisible(false);
+                        }}
+                        style={{
+                            borderRight: 'none',
+                            height: '100%'
+                        }}
+                        theme="dark"
+                    />
+                </Drawer>
+
+                <Layout.Sider
+                    width={200}
+                    style={{
+                        background: colorBgContainer,
+                        position: 'fixed',
+                        left: 0,
+                        top: 64,
+                        bottom: 0,
+                        display: 'block',
+                        paddingTop: '50px'
+                    }}
+                    breakpoint="md"
+                    collapsedWidth={0}
+                >
+                    <Menu
+                        mode="inline"
+                        selectedKeys={[selectedMenu]}
+                        style={{ 
+                            height: '100%', 
+                            borderRight: 0,
+                            paddingTop: '20px'
+                        }}
+                        items={menuItems}
+                        onClick={({ key }) => setSelectedMenu(key)}
+                        theme="dark"
+                    />
+                </Layout.Sider>
+
+                <Layout style={{ 
+                    padding: '24px',
+                    minHeight: 'calc(100vh - 64px)',
+                    marginLeft: 200
+                }}>
+                    <Content
+                        style={{
+                            padding: 24,
+                            margin: 0,
+                            minHeight: 280,
+                            background: colorBgContainer,
+                            borderRadius: borderRadiusLG,
+                            overflow: 'auto'
+                        }}
+                    >
+                        {renderContent()}
+                    </Content>
+                </Layout>
+            </Layout>
+        </Layout>
+    );
 };
 
 export default AdminDashboard; 

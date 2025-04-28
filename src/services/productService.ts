@@ -1,48 +1,77 @@
-import api from './api';
+import axios from 'axios';
 
-export interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  detailedDescription: string;
-  price: number;
-  images: string[];
-  category: string;
-  ingredients: string[];
-  preparationTime: string;
-  allergens: string[];
-  nutritionalInfo: {
-    calories: number;
-    proteins: number;
-    carbohydrates: number;
-    fats: number;
-  };
-  stock: number;
-  rating: number;
-  numReviews: number;
-}
+const API_URL = process.env.REACT_APP_API_URL || 'https://hellogassy-backend.onrender.com/api';
+// const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000/api';
 
-export const getProducts = async () => {
-  const response = await api.get('/products');
-  return response.data;
-};
 
-export const getProductById = async (id: string) => {
-  const response = await api.get(`/products/${id}`);
-  return response.data;
-};
+export const productService = {
+    getAllProducts: async () => {
+        const response = await axios.get(`${API_URL}/products`, {headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
 
-export const createProduct = async (productData: Partial<Product>) => {
-  const response = await api.post('/products', productData);
-  return response.data;
-};
+        return response.data;
+    },
 
-export const updateProduct = async (id: string, productData: Partial<Product>) => {
-  const response = await api.put(`/products/${id}`, productData);
-  return response.data;
-};
+    getProduct: async (id: string) => {
+        const response = await axios.get(`${API_URL}/products/${id}`, {headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
+        return response.data;
+    },
 
-export const deleteProduct = async (id: string) => {
-  const response = await api.delete(`/products/${id}`);
-  return response.data;
+    createProduct: async (productData: {
+        name: string;
+        description?: string;
+        detailedDescription: string;
+        price: number;
+        category: string;
+        ingredients: string[];
+        preparationTime: string;
+        allergens: string[];
+        nutritionalInfo: {
+            calories: number;
+            proteins: number;
+            carbohydrates: number;
+            fats: number;
+        };
+        stock: number;
+        images: string[];
+    }) => {
+        const response = await axios.post(`${API_URL}/products`, productData ,   {headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
+        return response.data;
+    },
+
+    updateProduct: async (id: string, productData: {
+        name?: string;
+        description?: string;
+        detailedDescription?: string;
+        price?: number;
+        category?: string;
+        ingredients?: string[];
+        preparationTime?: string;
+        allergens?: string[];
+        nutritionalInfo?: {
+            calories: number;
+            proteins: number;
+            carbohydrates: number;
+            fats: number;
+        };
+        stock?: number;
+        images?: string[];
+    }) => {
+        const response = await axios.put(`${API_URL}/products/${id}`, productData, {headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
+        return response.data;
+    },
+
+    deleteProduct: async (id: string) => {
+        const response = await axios.delete(`${API_URL}/products/${id}`, {headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
+        return response.data;
+    }
 }; 
