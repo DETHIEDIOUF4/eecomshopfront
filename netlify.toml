@@ -1,4 +1,6 @@
 [build]
   command = "npm ci --legacy-peer-deps && npm run build"
   publish = "build" # ou "dist" selon ton projet
+[build.environment]
+  CI = "false"
  
