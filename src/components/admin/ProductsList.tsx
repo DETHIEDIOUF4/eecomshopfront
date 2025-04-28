@@ -10,7 +10,7 @@ const ProductsList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/products', {
+        const response = await axios.get('https://hellogassy-backend.onrender.com/api/products', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
@@ -29,7 +29,7 @@ const ProductsList = () => {
   const handleDelete = async (productId: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
       try {
-        await axios.delete(`http://localhost:4000/api/products/${productId}`, {
+        await axios.delete(`https://hellogassy-backend.onrender.com/api/products/${productId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }

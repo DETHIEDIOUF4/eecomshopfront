@@ -9,7 +9,7 @@ const OrdersList = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/orders', {
+        const response = await axios.get('https://hellogassy-backend.onrender.com/api/orders', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
@@ -27,7 +27,7 @@ const OrdersList = () => {
 
   const handleUpdateStatus = async (orderId: string, status: string) => {
     try {
-      await axios.put(`http://localhost:4000/api/orders/${orderId}/status`, 
+      await axios.put(`https://hellogassy-backend.onrender.com/api/orders/${orderId}/status`, 
         { status },
         {
           headers: {
@@ -36,7 +36,7 @@ const OrdersList = () => {
         }
       );
       // Refresh orders list
-      const response = await axios.get('http://localhost:4000/api/orders', {
+      const response = await axios.get('https://hellogassy-backend.onrender.com/api/orders', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }

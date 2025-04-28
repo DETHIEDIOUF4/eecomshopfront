@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios.get('http://localhost:4000/api/users/profile', {
+      axios.get('https://hellogassy-backend.onrender.com/api/users/profile', {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => setUser(response.data))
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/users/login', { 
+      const response = await axios.post('https://hellogassy-backend.onrender.com/api/users/login', { 
         email, 
         password 
       });
