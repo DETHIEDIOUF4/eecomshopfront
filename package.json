@@ -38,7 +38,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "@typescript-eslint/no-unused-vars": "warn"
+    }
   },
   "browserslist": {
     "production": [
@@ -52,6 +55,7 @@
       "last 1 safari version"
     ]
   },
+  
   "devDependencies": {
     "@types/react-image-gallery": "^1.2.4"
   }

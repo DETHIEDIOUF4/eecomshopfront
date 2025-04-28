@@ -11,14 +11,13 @@ import {
   Box,
   Button,
   Divider,
-  Alert,
   Paper
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { removeFromCart, updateQuantity } from '../store/cartSlice';
+import { removeFromCart } from '../store/cartSlice';
 import { CartState } from '../types';
 
 interface CartProps {

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Box, Container, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import logo from '../assets/banner.png'; 
 
 const Banner: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // const theme = useTheme();
+  // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Box
