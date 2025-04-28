@@ -5,27 +5,37 @@ const API_URL = process.env.REACT_APP_API_URL || 'https://hellogassy-backend.onr
 
 export const categoryService = {
     getAllCategories: async () => {
-        const response = await axios.get(`${API_URL}/categories`);
+        const response = await axios.get(`${API_URL}/categories`,{headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
         return response.data;
     },
 
     getCategory: async (id: string) => {
-        const response = await axios.get(`${API_URL}/categories/${id}`);
+        const response = await axios.get(`${API_URL}/categories/${id}`,{headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
         return response.data;
     },
 
     createCategory: async (categoryData: { name: string; description?: string }) => {
-        const response = await axios.post(`${API_URL}/categories`, categoryData);
+        const response = await axios.post(`${API_URL}/categories`, categoryData,{headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
         return response.data;
     },
 
     updateCategory: async (id: string, categoryData: { name: string; description?: string }) => {
-        const response = await axios.put(`${API_URL}/categories/${id}`, categoryData);
+        const response = await axios.put(`${API_URL}/categories/${id}`, categoryData,{headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
         return response.data;
     },
 
     deleteCategory: async (id: string) => {
-        const response = await axios.delete(`${API_URL}/categories/${id}`);
+        const response = await axios.delete(`${API_URL}/categories/${id}`,{headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }});
         return response.data;
     }
 }; 

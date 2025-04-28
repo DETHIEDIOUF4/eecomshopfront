@@ -60,6 +60,7 @@ export interface Order {
   deliveredAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  status: 'pending' | 'processing' | 'delivered' | 'cancelled';
 }
 
 export interface OrderData {
@@ -91,7 +92,9 @@ export interface OrderData {
 
 export const createOrder = async (orderData: OrderData) => {
   try {
-    const response = await axiosInstance.post('/orders', orderData);
+    const response = await axiosInstance.post('/orders', orderData,{headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }});
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -104,17 +107,23 @@ export const createOrder = async (orderData: OrderData) => {
 };
 
 export const getOrderById = async (orderId: string) => {
-  const response = await axiosInstance.get(`/orders/${orderId}`);
+  const response = await axiosInstance.get(`/orders/${orderId}`,{headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`
+  }});
   return response;
 };
 
 export const getMyOrders = async () => {
-  const response = await axiosInstance.get('/orders/myorders');
+  const response = await axiosInstance.get('/orders/myorders',{headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`
+  }});
   return response.data;
 };
 
 export const updateOrderToPaid = async (orderId: string, paymentResult: any) => {
-  const response = await axiosInstance.put(`/orders/${orderId}/pay`, paymentResult);
+  const response = await axiosInstance.put(`/orders/${orderId}/pay`, paymentResult,{headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`
+  }});
   return response.data;
 };
 
@@ -124,20 +133,31 @@ export const payOrder = async (id: string, paymentResult: {
   update_time: string;
   email_address: string;
 }) => {
-  const response = await axiosInstance.put(`/orders/${id}/pay`, paymentResult);
+  const response = await axiosInstance.put(`/orders/${id}/pay`, paymentResult,{headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`
+  }});
   return response.data;
 };
 
 export const deliverOrder = async (id: string) => {
-  const response = await axiosInstance.put(`/orders/${id}/deliver`);
-  return response.data;
-};
-
-export const getAllOrders = async () => {
-  const response = await axiosInstance.get('/orders',{
+  const response = await axiosInstance.put(`/orders/${id}/deliver`, {}, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`
     }
   });
+  return response.data;
+};
+
+export const getAllOrders = async (): Promise<Order[]> => {
+  const response = await axiosInstance.get('/orders',{headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`
+  }});
+  return response.data;
+};
+
+export const updateOrderStatus = async (id: string, status: Order['status']): Promise<Order> => {
+  const response = await axiosInstance.put(`/orders/${id}`, { status }, {headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`
+  }});
   return response.data;
 }; 

@@ -4,6 +4,7 @@ import { MenuOutlined, ShoppingCartOutlined, AppstoreOutlined, OrderedListOutlin
 import CategoryManagement from '../components/admin/CategoryManagement';
 import ProductManagement from '../components/admin/ProductManagement';
 import OrderManagement from '../components/admin/OrderManagement';
+import StatisticsDashboard from '../components/admin/StatisticsDashboard';
 
 const { Header, Content } = Layout;
 
@@ -30,6 +31,11 @@ const AdminDashboard: React.FC = () => {
             label: 'Gestion des commandes',
             icon: <OrderedListOutlined />
         },
+        {
+            key: 'statistiques',
+            label: 'Statistiques',
+            icon: <OrderedListOutlined />
+        },
     ];
 
     const renderContent = () => {
@@ -40,6 +46,8 @@ const AdminDashboard: React.FC = () => {
                 return <CategoryManagement />;
             case 'orders':
                 return <OrderManagement />;
+            case 'statistiques':
+                    return <StatisticsDashboard/>;
             default:
                 return <ProductManagement />;
         }
