@@ -28,6 +28,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import { AuthProvider } from './contexts/AuthContext';
 import AdminLogin from './pages/AdminLogin';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import Footer from './components/Footer';
 
 const HomePage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -36,6 +37,7 @@ const HomePage: React.FC = () => {
   const [showPromotions, setShowPromotions] = useState(false);
   const [priceSort, setPriceSort] = useState<'asc' | 'desc'>('asc');
   const [products, setProducts] = useState<Product[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -47,24 +49,26 @@ const HomePage: React.FC = () => {
   }, [products]);
 
   const filteredProducts = useMemo(() => {
-    // Commencer avec tous les produits
     let filtered = [...products];
-
+    // Filtrer par searchTerm (nom ou description)
+    if (searchTerm.trim() !== '') {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
     // Filtrer par catégorie
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
-
     // Filtrer par fourchette de prix
     filtered = filtered.filter(product => 
       product.price >= priceRange[0] && product.price <= priceRange[1]
     );
-
     // Filtrer les promotions si activé
     if (showPromotions) {
-      filtered = filtered.filter(product => product.isPromotion); // Vous devrez ajouter cette propriété à votre type Product
+      filtered = filtered.filter(product => product.isPromotion);
     }
-
     // Trier par prix
     filtered.sort((a, b) => {
       if (priceSort === 'asc') {
@@ -73,9 +77,8 @@ const HomePage: React.FC = () => {
         return b.price - a.price;
       }
     });
-
     return filtered;
-  }, [selectedCategory, priceRange, showPromotions, priceSort, products]);
+  }, [searchTerm, selectedCategory, priceRange, showPromotions, priceSort, products]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -176,6 +179,40 @@ const HomePage: React.FC = () => {
                 {filteredProducts.length} produit{filteredProducts.length > 1 ? 's' : ''}
               </Typography>
             </Box>
+            <Box sx={{ mb: 3 }}>
+              <input
+                type="text"
+                placeholder="Rechercher un produit..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  fontSize: '16px',
+                  borderRadius: '4px',
+                  border: '2px solid #e53935',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  marginBottom: '16px'
+                }}
+              />
+              <select
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  fontSize: '16px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc'
+                }}
+              >
+                <option value="all">Toutes les catégories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </Box>
             <Grid container spacing={3}>
               {filteredProducts.map((product) => (
                 <Grid item xs={12} sm={6} md={4} key={product._id}>
@@ -198,31 +235,34 @@ function App() {
     <Provider store={store}>
       <AuthProvider>
         <Router>
-          <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#ffffff' }}>
-            <Routes>
-              <Route path="/" element={<Layout><Outlet /></Layout>}>
-                <Route index element={<HomePage />} />
-                <Route path="/products/:id" element={<ProductDetails />} />
-                <Route path="/checkout/review" element={<CartReview />} />
-                <Route path="/order/:id" element={<OrderDetails />} />
-                <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin" element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
+          <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#ffffff', flexDirection: 'column' }}>
+            <Box sx={{ flex: 1, display: 'flex' }}>
+              <Routes>
+                <Route path="/" element={<Layout><Outlet /></Layout>}>
+                  <Route index element={<HomePage />} />
+                  <Route path="/products/:id" element={<ProductDetails />} />
+                  <Route path="/checkout/review" element={<CartReview />} />
+                  <Route path="/order/:id" element={<OrderDetails />} />
+                  <Route path="/admin/login" element={<AdminLogin />} />
+                  <Route path="/admin" element={
+                    <ProtectedRoute>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  } />
+                </Route>
+                <Route path="/auth" element={
+                  <Layout>
+                    <Auth />
+                  </Layout>
                 } />
-              </Route>
-              <Route path="/auth" element={
-                <Layout>
-                  <Auth />
-                </Layout>
-              } />
-              <Route path="/checkout/info" element={
-                <Layout>
-                  <Checkout />
-                </Layout>
-              } />
-            </Routes>
+                <Route path="/checkout/info" element={
+                  <Layout>
+                    <Checkout />
+                  </Layout>
+                } />
+              </Routes>
+            </Box>
+            <Footer />
           </Box>
         </Router>
       </AuthProvider>
