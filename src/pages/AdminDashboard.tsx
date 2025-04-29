@@ -75,7 +75,7 @@ const AdminDashboard: React.FC = () => {
                     fontSize: '1.5rem',
                     marginLeft: 16
                 }}>
-                    Tableau de bord
+                    {/* Tableau de bord */}
                 </h1>
             </Header>
             <Layout style={{ marginTop: 64 }}>

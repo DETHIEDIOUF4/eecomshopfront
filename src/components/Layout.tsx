@@ -85,7 +85,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onMenuClick, showMenuButton =
                 display: { xs: 'none', sm: 'block' }
               }}
             >
-              Prêt à cuire
+              Prêt à garnir
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 2 }}>

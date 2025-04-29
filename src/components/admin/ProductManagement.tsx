@@ -120,7 +120,7 @@ const ProductManagement: React.FC = () => {
                 },
             });
             
-            const imageUrl = `https://hellogassy-backend.onrender.com${response.data.imageUrl}`;
+            const imageUrl = `${response.data.imageUrl}`;
             onSuccess(imageUrl);
             setFileList(prev => [...prev, { 
                 uid: imageUrl, 
