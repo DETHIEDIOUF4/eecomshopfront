@@ -13,6 +13,8 @@ const OrderManagement: React.FC = () => {
     const fetchOrders = async () => {
         try {
             const data = await getAllOrders() ;
+            console.log("data");
+            console.log(data);
             setOrders(data);
         } catch (error) {
             message.error('Erreur lors de la récupération des commandes');
@@ -45,9 +47,15 @@ const OrderManagement: React.FC = () => {
         },
         {
             title: 'Client',
-            dataIndex: 'user',
-            key: 'user',
-            render: (user: any) => user?.email || 'N/A',
+            dataIndex: 'personalInfo',
+            key: 'personalInfo',
+            render: (personalInfo: any) => personalInfo?.firstName   || 'N/A',
+        },
+        {
+            title: 'Numero Telephone',
+            dataIndex: 'personalInfo',
+            key: 'personalInfo',
+            render: (personalInfo: any) => personalInfo?.phone || 'N/A',
         },
         {
             title: 'Total',
@@ -102,7 +110,10 @@ const OrderManagement: React.FC = () => {
                     expandedRowRender: (record) => (
                         <div>
                             <h4>Détails de la commande</h4>
-                            <p>Adresse de livraison: {record.shippingAddress.address}</p>
+                            
+                            <p>Adresse de livraison: { record.shippingPrice == 0 ?  "Retrait Magasin" :record.shippingAddress.city  }</p>
+                            {/* <p>Rue: { record.shippingPrice == 0 ?  "" :record.shippingAddress.postalCode  }</p> */}
+
                             <p>Méthode de paiement: {record.paymentMethod}</p>
                             <h4>Produits commandés:</h4>
                             <ul>
