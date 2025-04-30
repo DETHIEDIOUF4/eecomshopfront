@@ -86,7 +86,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
           {product.description}
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" color="black">
+          <Typography variant="h6" color="primary">
             {product.price.toLocaleString()} FCFA
           </Typography>
           <Button
