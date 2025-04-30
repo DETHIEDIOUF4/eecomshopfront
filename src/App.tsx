@@ -29,6 +29,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import AdminLogin from './pages/AdminLogin';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Footer from './components/Footer';
+import WhatsAppButton from './components/WhatsAppButton';
 
 const HomePage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -263,6 +264,7 @@ function App() {
               </Routes>
             </Box>
             <Footer />
+            <WhatsAppButton />
           </Box>
         </Router>
       </AuthProvider>

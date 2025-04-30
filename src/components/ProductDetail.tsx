@@ -227,7 +227,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, open, onClose })
                     fontSize: '1.1rem'
                   }}
                 >
-                  Valider ({quantity * product.price} FCFA)
+                 Ajouter ({quantity * product.price} FCFA)
                 </Button>
               </Box>
             </Box>
