@@ -15,6 +15,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { Product } from '../types';
 import ImageGallery from 'react-image-gallery';
 import "react-image-gallery/styles/css/image-gallery.css";
+import { Color } from 'antd/es/color-picker';
 
 interface ProductCardProps {
   product: Product;
@@ -85,13 +86,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
           {product.description}
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" color="primary">
+          <Typography variant="h6" color="black">
             {product.price.toLocaleString()} FCFA
           </Typography>
           <Button
             variant="contained"
             color="primary"
-            startIcon={<AddShoppingCartIcon />}
+            startIcon={  <AddShoppingCartIcon style={{ color: 'black' }} />}
+            
             onClick={handleAddToCartClick}
             sx={{
               backgroundColor: theme.palette.primary.main,

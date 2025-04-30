@@ -72,8 +72,10 @@ const ProductDetails: React.FC = () => {
           product,
           quantity
         }));
-
+        
         setIsAddingToCart(false);
+        
+        
       } catch (error) {
         console.error('Erreur lors de l\'ajout au panier:', error);
         setIsAddingToCart(false);
