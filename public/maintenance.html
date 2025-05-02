@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance | Hello Gassy'z</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      padding: 48px 32px;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    .logo {
+      width: 90px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      color: #e53935;
+      margin-bottom: 8px;
+      font-size: 2.2rem;
+    }
+    p {
+      color: #444;
+      font-size: 1.1rem;
+      margin-bottom: 32px;
+    }
+    .timer {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .timer-box {
+      background: #f8b500;
+      color: #fff;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      min-width: 60px;
+    }
+    .timer-label {
+      font-size: 0.8rem;
+      color: #e53935;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+    .footer {
+      margin-top: 32px;
+      color: #888;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/icons/whatsapp.png" alt="Logo Hello Gassy'z" class="logo" />
+    <h1>En maintenance</h1>
+    <p>La plateforme <b>Hello Gassy'z</b> est temporairement indisponible.<br>
+    Nous revenons très vite pour mieux vous servir !</p>
+    <div class="timer" id="timer">
+      <div>
+        <div class="timer-box" id="hours">00</div>
+        <div class="timer-label">heures</div>
+      </div>
+      <div>
+        <div class="timer-box" id="minutes">00</div>
+        <div class="timer-label">minutes</div>
+      </div>
+      <div>
+        <div class="timer-box" id="seconds">00</div>
+        <div class="timer-label">secondes</div>
+      </div>
+    </div>
+    <div class="footer">
+      Besoin d'aide ? Contactez-nous sur WhatsApp : <a href="https://wa.me/221774093230" style="color:#25D366;text-decoration:none;font-weight:600;">+221 77 409 32 30</a>
+    </div>
+  </div>
+  <script>
+    // Timer de 2 heures (modifiable)
+    const target = new Date(Date.now() + 2 * 60 * 60 * 1000);
+    function updateTimer() {
+      const now = new Date();
+      let diff = Math.max(0, target - now);
+      const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+      diff %= (1000 * 60 * 60);
+      const minutes = String(Math.floor(diff / (1000 * 60))).padStart(2, '0');
+      diff %= (1000 * 60);
+      const seconds = String(Math.floor(diff / 1000)).padStart(2, '0');
+      document.getElementById('hours').textContent = hours;
+      document.getElementById('minutes').textContent = minutes;
+      document.getElementById('seconds').textContent = seconds;
+    }
+    setInterval(updateTimer, 1000);
+    updateTimer();
+  </script>
+</body>
+</html> 

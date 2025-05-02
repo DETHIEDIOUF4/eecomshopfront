@@ -1,1 +1,6 @@
-/*    /index.html   200 
+# /*    /index.html   200 
+# Si l'URL contient ?key=traore, servir le site React normalement
+/:splat  /index.html 200!  Query:key=traore
+
+# Sinon, afficher la page de maintenance
+/* /maintenance.html 200
