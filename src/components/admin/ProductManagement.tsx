@@ -16,6 +16,8 @@ const ProductManagement: React.FC = () => {
     const [form] = Form.useForm();
     const [fileList, setFileList] = useState<any[]>([]);
     const [uploading, setUploading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('');
 
     useEffect(() => {
         fetchProducts();
@@ -25,7 +27,9 @@ const ProductManagement: React.FC = () => {
     const fetchProducts = async () => {
         try {
             const data = await productService.getAllProducts();
-            setProducts(data);
+            // Trie les produits du plus récent au plus ancien
+            const sortedProducts = [...data].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            setProducts(sortedProducts);
         } catch (error) {
             message.error('Erreur lors de la récupération des produits');
         }
@@ -140,6 +144,14 @@ const ProductManagement: React.FC = () => {
         setFileList(prev => prev.filter(f => f.uid !== file.uid));
     };
 
+    // Trie et filtre les produits
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
+        const matchesCategory = !categoryFilter || product.category === categoryFilter;
+        return matchesSearch && matchesCategory;
+    });
+
     const columns = [
         {
             title: 'Nom',
@@ -180,10 +192,30 @@ const ProductManagement: React.FC = () => {
 
     return (
         <div>
+            <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+                <Input
+                    placeholder="Rechercher un produit..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    style={{ width: 250 }}
+                />
+                <Select
+                    placeholder="Filtrer par catégorie"
+                    value={categoryFilter}
+                    onChange={value => setCategoryFilter(value)}
+                    allowClear
+                    style={{ width: 200 }}
+                >
+                    <Option value="">Toutes les catégories</Option>
+                    {categories.map((category: any) => (
+                        <Option key={category._id} value={category.name}>{category.name}</Option>
+                    ))}
+                </Select>
+            </div>
             <Button type="primary" onClick={handleAddProduct} style={{ marginBottom: 16 }}>
                 Ajouter un produit
             </Button>
-            <Table dataSource={products} columns={columns} rowKey="_id" />
+            <Table dataSource={filteredProducts} columns={columns} rowKey="_id" />
 
             <Modal
                 title={editingProduct ? 'Modifier le produit' : 'Ajouter un produit'}

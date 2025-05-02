@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Modal, message } from 'antd';
+import { Table, Tag, Button, Modal, message, Input, Select } from 'antd';
 import { getAllOrders, deliverOrder, Order } from '../../services/orderService';
+
+const { Option } = Select;
 
 const OrderManagement: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
 
     useEffect(() => {
         fetchOrders();
@@ -12,10 +16,10 @@ const OrderManagement: React.FC = () => {
 
     const fetchOrders = async () => {
         try {
-            const data = await getAllOrders() ;
-            console.log("data");
-            console.log(data);
-            setOrders(data);
+            const data = await getAllOrders();
+            // Trie du plus récent au plus ancien
+            const sortedOrders = [...data].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            setOrders(sortedOrders);
         } catch (error) {
             message.error('Erreur lors de la récupération des commandes');
         } finally {
@@ -32,6 +36,13 @@ const OrderManagement: React.FC = () => {
             message.error('Erreur lors de la mise à jour de la commande');
         }
     };
+
+    // Filtrage par nom client et statut livraison
+    const filteredOrders = orders.filter((order: any) => {
+        const matchesSearch = order.personalInfo?.firstName?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = !statusFilter || (statusFilter === 'delivered' ? order.isDelivered : !order.isDelivered);
+        return matchesSearch && matchesStatus;
+    });
 
     const columns = [
         {
@@ -101,16 +112,34 @@ const OrderManagement: React.FC = () => {
 
     return (
         <div>
+            <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+                <Input
+                    placeholder="Rechercher par nom de client..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    style={{ width: 250 }}
+                />
+                <Select
+                    placeholder="Filtrer par statut livraison"
+                    value={statusFilter}
+                    onChange={value => setStatusFilter(value)}
+                    allowClear
+                    style={{ width: 200 }}
+                >
+                    <Option value="">Tous les statuts</Option>
+                    <Option value="delivered">Livré</Option>
+                    <Option value="pending">En cours</Option>
+                </Select>
+            </div>
             <Table
                 columns={columns}
-                dataSource={orders}
+                dataSource={filteredOrders}
                 rowKey="_id"
                 loading={loading}
                 expandable={{
                     expandedRowRender: (record) => (
                         <div>
                             <h4>Détails de la commande</h4>
-                            
                             <p>Adresse de livraison: { record.shippingPrice == 0 ?  "Retrait Magasin" :record.shippingAddress.city  }</p>
                             {/* <p>Rue: { record.shippingPrice == 0 ?  "" :record.shippingAddress.postalCode  }</p> */}
 
