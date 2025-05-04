@@ -27,6 +27,15 @@ const Footer: React.FC = () => (
         Adresse : Dakar, Sénégal
       </Typography>
     </Box>
+    <Box sx={{ mt: 2 }}>
+      <Link href="/politique-confidentialite" color="inherit" underline="hover" sx={{ mx: 1 }}>
+        Politique de confidentialité
+      </Link>
+      <span style={{ color: '#888' }}>|</span>
+      <Link href="/conditions-utilisation" color="inherit" underline="hover" sx={{ mx: 1 }}>
+        Conditions d'utilisation
+      </Link>
+    </Box>
     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
       <IconButton component="a" href="https://instagram.com/hellogassy" target="_blank" rel="noopener" aria-label="Instagram">
         <img src="/icons/instagram.png" alt="Instagram" style={{ width: 32, height: 32 }} />
@@ -41,6 +50,7 @@ const Footer: React.FC = () => (
         <img src="/icons/tiktok.png" alt="TikTok" style={{ width: 32, height: 32 }} />
       </IconButton>
     </Box>
+  
   </Box>
 );
 

@@ -30,6 +30,8 @@ import AdminLogin from './pages/AdminLogin';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
+import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
+import ConditionsUtilisation from './pages/ConditionsUtilisation';
 
 const HomePage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -260,6 +262,12 @@ function App() {
                   <Layout>
                     <Checkout />
                   </Layout>
+                } />
+                <Route path="/politique-confidentialite" element={
+                  <PolitiqueConfidentialite />
+                } />
+                <Route path="/conditions-utilisation" element={
+                  <ConditionsUtilisation />
                 } />
               </Routes>
             </Box>
