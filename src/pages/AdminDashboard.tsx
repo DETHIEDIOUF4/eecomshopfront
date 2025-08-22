@@ -9,13 +9,18 @@ import StatisticsDashboard from '../components/admin/StatisticsDashboard';
 const { Header, Content } = Layout;
 
 const AdminDashboard: React.FC = () => {
-    const [selectedMenu, setSelectedMenu] = useState('products');
+    const [selectedMenu, setSelectedMenu] = useState('statistiques');
     const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
     const menuItems = [
+        {
+            key: 'statistiques',
+            label: 'Statistiques',
+            icon: <OrderedListOutlined />
+        },
         {
             key: 'products',
             label: 'Gestion des produits',
@@ -31,11 +36,7 @@ const AdminDashboard: React.FC = () => {
             label: 'Gestion des commandes',
             icon: <OrderedListOutlined />
         },
-        {
-            key: 'statistiques',
-            label: 'Statistiques',
-            icon: <OrderedListOutlined />
-        },
+      
     ];
 
     const renderContent = () => {
@@ -49,7 +50,7 @@ const AdminDashboard: React.FC = () => {
             case 'statistiques':
                     return <StatisticsDashboard/>;
             default:
-                return <ProductManagement />;
+                return <StatisticsDashboard />;
         }
     };
 

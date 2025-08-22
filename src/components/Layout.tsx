@@ -89,7 +89,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onMenuClick, showMenuButton =
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
+            {/* <Button
               color="primary"
               startIcon={<PersonOutlineIcon />}
               onClick={() => navigate('/auth')}
@@ -107,7 +107,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onMenuClick, showMenuButton =
               }}
             >
               <PersonOutlineIcon />
-            </IconButton>
+            </IconButton> */}
             <IconButton
               color="primary"
               onClick={() => setCartOpen(true)}

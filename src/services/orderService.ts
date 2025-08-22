@@ -48,7 +48,14 @@ export interface Order {
   _id: string;
   user: string;
   orderItems: OrderItem[];
+  personalInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
   shippingAddress: ShippingAddress;
+  deliveryMethod: string;
   paymentMethod: string;
   itemsPrice: number;
   taxPrice: number;
@@ -141,6 +148,15 @@ export const payOrder = async (id: string, paymentResult: {
 
 export const deliverOrder = async (id: string) => {
   const response = await axiosInstance.put(`/orders/${id}/deliver`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  return response.data;
+};
+
+export const markOrderAsPaid = async (id: string) => {
+  const response = await axiosInstance.put(`/orders/${id}/pay`, {}, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`
     }
