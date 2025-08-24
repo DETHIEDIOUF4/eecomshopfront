@@ -64,6 +64,13 @@ const CartReview: React.FC = () => {
     phone: ''
   });
 
+  const [personalInfoErrors, setPersonalInfoErrors] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: ''
+  });
+
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
       handlePlaceOrder();
@@ -88,18 +95,106 @@ const CartReview: React.FC = () => {
   };
 
   const handlePersonalInfoChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
     setPersonalInfo({
       ...personalInfo,
-      [field]: event.target.value
+      [field]: value
     });
+
+    // Effacer l'erreur quand l'utilisateur commence à taper
+    if (personalInfoErrors[field as keyof typeof personalInfoErrors]) {
+      setPersonalInfoErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+  };
+
+  const handlePersonalInfoBlur = (field: string) => () => {
+    const value = personalInfo[field as keyof typeof personalInfo];
+    let errorMessage = '';
+    
+    // Validation des champs obligatoires
+    if (field === 'firstName' && !value.trim()) {
+      errorMessage = 'Le prénom est obligatoire';
+    }
+    
+    if (field === 'lastName' && !value.trim()) {
+      errorMessage = 'Le nom est obligatoire';
+    }
+    
+    if (field === 'email') {
+      if (!value.trim()) {
+        errorMessage = 'L\'email est obligatoire';
+      } else if (!validateEmail(value)) {
+        errorMessage = 'Veuillez saisir une adresse email valide';
+      }
+    }
+    
+    if (field === 'phone') {
+      if (!value.trim()) {
+        errorMessage = 'Le numéro de téléphone est obligatoire';
+      } else if (!validatePhone(value)) {
+        errorMessage = 'Veuillez saisir un numéro de téléphone valide (ex: 77 123 45 67)';
+      }
+    }
+
+    setPersonalInfoErrors(prev => ({
+      ...prev,
+      [field]: errorMessage
+    }));
+  };
+
+  // Validation email
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Validation téléphone (format français/sénégalais)
+  const validatePhone = (phone: string) => {
+    // Nettoyer le numéro (enlever espaces, tirets, etc.)
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    
+    // Vérifier si c'est un numéro sénégalais (commence par +221 ou 221)
+    if (cleanPhone.startsWith('+221') || cleanPhone.startsWith('221')) {
+      const senegalPhone = cleanPhone.replace(/^(\+?221)/, '');
+      return /^7[0-9]{8}$/.test(senegalPhone);
+    }
+    
+    // Vérifier si c'est un numéro français (commence par +33 ou 33)
+    if (cleanPhone.startsWith('+33') || cleanPhone.startsWith('33')) {
+      const francePhone = cleanPhone.replace(/^(\+?33)/, '');
+      return /^[1-9][0-9]{8}$/.test(francePhone);
+    }
+    
+    // Vérifier si c'est un numéro local (7 chiffres pour Sénégal, 10 chiffres pour France)
+    if (cleanPhone.length === 9 && cleanPhone.startsWith('7')) {
+      return /^7[0-9]{8}$/.test(cleanPhone);
+    }
+    
+    if (cleanPhone.length === 10) {
+      return /^[1-9][0-9]{9}$/.test(cleanPhone);
+    }
+    
+    return false;
   };
 
   const validateStep = () => {
     switch (activeStep) {
       case 0:
-        return items.length > 0;
+        // Vérifier qu'il y a au moins 25 produits au total
+        const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+        return items.length > 0 && totalQuantity >= 25;
       case 1:
-        return Object.values(personalInfo).every(value => value.trim() !== '');
+        return (
+          personalInfo.firstName.trim() !== '' &&
+          personalInfo.lastName.trim() !== '' &&
+          personalInfo.email.trim() !== '' &&
+          validateEmail(personalInfo.email) &&
+          personalInfo.phone.trim() !== '' &&
+          validatePhone(personalInfo.phone)
+        );
       case 2:
         if (deliveryMethod === 'delivery') {
           return Object.values(deliveryAddress).every(value => value.trim() !== '');
@@ -163,6 +258,17 @@ const CartReview: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               Articles dans votre panier
             </Typography>
+            {(() => {
+              const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+              if (totalQuantity < 25) {
+                return (
+                  <Alert severity="warning" sx={{ mb: 2 }}>
+                    Minimum de commande requis : 25 articles. Vous avez actuellement {totalQuantity} article{totalQuantity > 1 ? 's' : ''}.
+                  </Alert>
+                );
+              }
+              return null;
+            })()}
             <CartItems />
           </Box>
         );
@@ -180,6 +286,9 @@ const CartReview: React.FC = () => {
                   label="Prénom"
                   value={personalInfo.firstName}
                   onChange={handlePersonalInfoChange('firstName')}
+                  onBlur={handlePersonalInfoBlur('firstName')}
+                  error={!!personalInfoErrors.firstName}
+                  helperText={personalInfoErrors.firstName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -189,6 +298,9 @@ const CartReview: React.FC = () => {
                   label="Nom"
                   value={personalInfo.lastName}
                   onChange={handlePersonalInfoChange('lastName')}
+                  onBlur={handlePersonalInfoBlur('lastName')}
+                  error={!!personalInfoErrors.lastName}
+                  helperText={personalInfoErrors.lastName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -199,6 +311,10 @@ const CartReview: React.FC = () => {
                   type="email"
                   value={personalInfo.email}
                   onChange={handlePersonalInfoChange('email')}
+                  onBlur={handlePersonalInfoBlur('email')}
+                  error={!!personalInfoErrors.email}
+                  helperText={personalInfoErrors.email}
+                  placeholder="exemple@email.com"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -208,6 +324,10 @@ const CartReview: React.FC = () => {
                   label="Téléphone"
                   value={personalInfo.phone}
                   onChange={handlePersonalInfoChange('phone')}
+                  onBlur={handlePersonalInfoBlur('phone')}
+                  error={!!personalInfoErrors.phone}
+                  helperText={personalInfoErrors.phone}
+                  placeholder="77 123 45 67"
                 />
               </Grid>
             </Grid>
@@ -402,7 +522,7 @@ const CartReview: React.FC = () => {
           </Button>
           <Button
             variant="contained"
-            color="primary"
+            color={!validateStep() ? "error" : "primary"}
             onClick={handleNext}
             disabled={!validateStep() || isLoading}
           >
@@ -410,6 +530,8 @@ const CartReview: React.FC = () => {
               <CircularProgress size={24} color="inherit" />
             ) : activeStep === steps.length - 1 ? (
               'Valider la commande'
+            ) : activeStep === 0 && items.reduce((sum, item) => sum + item.quantity, 0) < 25 ? (
+              'Minimum 25 articles requis'
             ) : (
               'Suivant'
             )}

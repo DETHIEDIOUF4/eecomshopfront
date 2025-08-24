@@ -10,7 +10,8 @@ import {
   Button,
   Paper,
   Grid,
-  Divider
+  Divider,
+  Alert
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -24,14 +25,22 @@ const steps = ['Panier', 'Informations', 'Livraison', 'Paiement'];
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
+  const [isStepValid, setIsStepValid] = useState(true);
   const cart = useSelector((state: RootState) => state.cart);
 
   const handleNext = () => {
+    // Vérifier si l'étape actuelle est valide avant de continuer
+    if (activeStep === 1 && !isStepValid) {
+      return; // Ne pas passer à l'étape suivante si les informations ne sont pas valides
+    }
+    
     setActiveStep((prevStep) => prevStep + 1);
+    setIsStepValid(true); // Réinitialiser la validation pour l'étape suivante
   };
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
+    setIsStepValid(true); // Réinitialiser la validation pour l'étape précédente
   };
 
   const getStepContent = (step: number) => {
@@ -39,7 +48,7 @@ const Checkout: React.FC = () => {
       case 0:
         return <CartItems />;
       case 1:
-        return <CustomerInfo />;
+        return <CustomerInfo onValidationChange={setIsStepValid} />;
       case 2:
         return <ShippingAddress />;
       case 3:
@@ -96,13 +105,18 @@ const Checkout: React.FC = () => {
               <Typography variant="h6">Total</Typography>
               <Typography variant="h6">{cart.total.toLocaleString('fr-FR')} FCFA</Typography>
             </Box>
+            {!isStepValid && activeStep === 1 && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                Veuillez remplir correctement toutes les informations personnelles avant de continuer.
+              </Alert>
+            )}
             <Button
               fullWidth
               variant="contained"
-              color="primary"
+              color={!isStepValid && activeStep === 1 ? "error" : "primary"}
               size="large"
               onClick={handleNext}
-              disabled={activeStep === steps.length - 1}
+              disabled={activeStep === steps.length - 1 || (!isStepValid && activeStep === 1)}
             >
               {activeStep === steps.length - 1 ? 'Finaliser la commande' : 'Continuer'}
             </Button>
