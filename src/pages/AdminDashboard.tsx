@@ -31,7 +31,7 @@ const AdminDashboard: React.FC = () => {
     const menuItems = [
         {
             key: 'statistiques',
-            label: 'Statistiques',
+            label: 'Tableau de bord',
             icon: <OrderedListOutlined />
         },
         {
@@ -41,17 +41,17 @@ const AdminDashboard: React.FC = () => {
         },
         {
             key: 'products',
-            label: 'Gestion des produits',
+            label: 'Produits',
             icon: <ShoppingCartOutlined />
         },
         {
             key: 'categories',
-            label: 'Gestion des catégories',
+            label: 'Catégories',
             icon: <AppstoreOutlined />
         },
         {
             key: 'orders',
-            label: 'Gestion des commandes',
+            label: 'Commandes',
             icon: <OrderedListOutlined />
         },
     ];

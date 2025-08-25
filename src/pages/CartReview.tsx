@@ -183,9 +183,27 @@ const CartReview: React.FC = () => {
   const validateStep = () => {
     switch (activeStep) {
       case 0:
-        // Vérifier qu'il y a au moins 25 produits au total
-        const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
-        return items.length > 0 && totalQuantity >= 25;
+        // Vérifier la quantité minimum basée sur le prix des produits
+        let totalQuantity = 0;
+        let hasLowPriceItems = false;
+        let lowPriceQuantity = 0;
+        
+        items.forEach(item => {
+          if (item.product.price <= 200) {
+            // Pour les produits ≤ 200 FCFA, minimum 1 lot (25 pièces)
+            hasLowPriceItems = true;
+            lowPriceQuantity += item.quantity;
+          }
+          totalQuantity += item.quantity;
+        });
+        
+        // Si on a des produits ≤ 200 FCFA, vérifier le minimum de 1 lot
+        if (hasLowPriceItems) {
+          return items.length > 0 && lowPriceQuantity >= 1;
+        }
+        
+        // Sinon, juste vérifier qu'il y a au moins 1 produit
+        return items.length > 0 && totalQuantity >= 1;
       case 1:
         return (
           personalInfo.firstName.trim() !== '' &&
@@ -259,11 +277,23 @@ const CartReview: React.FC = () => {
               Articles dans votre panier
             </Typography>
             {(() => {
-              const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
-              if (totalQuantity < 25) {
+              let totalQuantity = 0;
+              let hasLowPriceItems = false;
+              let lowPriceQuantity = 0;
+              
+              items.forEach(item => {
+                if (item.product.price <= 200) {
+                  hasLowPriceItems = true;
+                  lowPriceQuantity += item.quantity;
+                }
+                totalQuantity += item.quantity;
+              });
+              
+              if (hasLowPriceItems && lowPriceQuantity < 1) {
                 return (
                   <Alert severity="warning" sx={{ mb: 2 }}>
-                    Minimum de commande requis : 25 articles. Vous avez actuellement {totalQuantity} article{totalQuantity > 1 ? 's' : ''}.
+                    Minimum de commande requis : 1 lot (25 pièces) pour les produits ≤ 200 FCFA. 
+                    Les produits à bas prix se vendent par lots de 25 pièces. 1 = 25 pièces, 2 = 50 pièces, etc.
                   </Alert>
                 );
               }
@@ -530,8 +560,20 @@ const CartReview: React.FC = () => {
               <CircularProgress size={24} color="inherit" />
             ) : activeStep === steps.length - 1 ? (
               'Valider la commande'
-            ) : activeStep === 0 && items.reduce((sum, item) => sum + item.quantity, 0) < 25 ? (
-              'Minimum 25 articles requis'
+            ) : activeStep === 0 && (() => {
+              let hasLowPriceItems = false;
+              let lowPriceQuantity = 0;
+              
+              items.forEach(item => {
+                if (item.product.price <= 200) {
+                  hasLowPriceItems = true;
+                  lowPriceQuantity += item.quantity;
+                }
+              });
+              
+              return hasLowPriceItems && lowPriceQuantity < 1;
+            })() ? (
+              'Minimum 1 lot requis (≤200 FCFA)'
             ) : (
               'Suivant'
             )}

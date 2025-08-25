@@ -13,7 +13,8 @@ import {
   Paper,
   TextField,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Alert
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { removeFromCart, updateQuantity } from '../../store/cartSlice';
@@ -46,6 +47,20 @@ const CartItems: React.FC = () => {
 
   return (
     <Box>
+      {/* Message d'alerte pour les produits ≤ 200 FCFA */}
+      {(() => {
+        const hasLowPriceItems = items.some(item => item.product.price <= 200);
+        if (hasLowPriceItems) {
+          return (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              <strong>Information :</strong> Les produits ≤ 200 FCFA se vendent par lots de 25 pièces. 
+              1 lot = 25 pièces, 2 lots = 50 pièces, etc.
+            </Alert>
+          );
+        }
+        return null;
+      })()}
+      
       {items.map((item) => (
         <Paper 
           key={item.product._id}
@@ -149,8 +164,16 @@ const CartItems: React.FC = () => {
                 alignItems: 'center' 
               }}>
                 <Typography variant="subtitle1" fontWeight="medium">
-                  {(item.product.price * item.quantity).toLocaleString('fr-FR')} FCFA
+                  {item.product.price <= 200 
+                    ? (item.product.price * item.quantity * 25).toLocaleString('fr-FR') + ' FCFA'
+                    : (item.product.price * item.quantity).toLocaleString('fr-FR') + ' FCFA'
+                  }
                 </Typography>
+                {item.product.price <= 200 && (
+                  <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                    ({item.quantity} lot{item.quantity > 1 ? 's' : ''} de 25)
+                  </Typography>
+                )}
               </Box>
             </Grid>
 

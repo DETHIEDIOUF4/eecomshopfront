@@ -78,7 +78,10 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cart }) => {
                       {item.product.name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Quantité: {item.quantity}
+                      Quantité: {item.product.price <= 200 
+                        ? `${item.quantity} lot${item.quantity > 1 ? 's' : ''} de 25 pièces`
+                        : item.quantity
+                      }
                     </Typography>
                   </Grid>
                   <Grid item xs={3} sm={3}>
@@ -87,7 +90,10 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cart }) => {
                       align="right" 
                       sx={{ fontWeight: 'bold' }}
                     >
-                      {(item.quantity * item.product.price).toLocaleString()} FCFA
+                      {item.product.price <= 200 
+                        ? (item.quantity * item.product.price * 25).toLocaleString() + ' FCFA'
+                        : (item.quantity * item.product.price).toLocaleString() + ' FCFA'
+                      }
                     </Typography>
                   </Grid>
                 </Grid>

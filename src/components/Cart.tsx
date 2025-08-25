@@ -11,7 +11,8 @@ import {
   Box,
   Button,
   Divider,
-  Paper
+  Paper,
+  Alert
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
@@ -75,6 +76,20 @@ const Cart: React.FC<CartProps> = ({ open, onClose }) => {
         </Paper>
       ) : (
         <>
+          {/* Message d'alerte pour les produits ≤ 200 FCFA */}
+          {(() => {
+            const hasLowPriceItems = items.some(item => item.product.price <= 200);
+            if (hasLowPriceItems) {
+              return (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  <strong>Information :</strong> Les produits ≤ 200 FCFA se vendent par lots de 25 pièces. 
+                  1 lot = 25 pièces, 2 lots = 50 pièces, etc.
+                </Alert>
+              );
+            }
+            return null;
+          })()}
+          
           <List sx={{ flexGrow: 1, overflow: 'auto' }}>
             {items.map((item) => (
               <React.Fragment key={item.product._id}>
@@ -102,10 +117,16 @@ const Cart: React.FC<CartProps> = ({ open, onClose }) => {
                     secondary={
                       <>
                         <Typography variant="body2" color="text.secondary">
-                          {item.product.price.toLocaleString('fr-FR')} FCFA x {item.quantity}
+                          {item.product.price <= 200 
+                            ? `${item.product.price.toLocaleString('fr-FR')} FCFA x ${item.quantity} lot${item.quantity > 1 ? 's' : ''} de 25 pièces`
+                            : `${item.product.price.toLocaleString('fr-FR')} FCFA x ${item.quantity}`
+                          }
                         </Typography>
                         <Typography variant="body2" color="primary">
-                          Total: {(item.product.price * item.quantity).toLocaleString('fr-FR')} FCFA
+                          Total: {item.product.price <= 200 
+                            ? (item.product.price * item.quantity * 25).toLocaleString('fr-FR') + ' FCFA'
+                            : (item.product.price * item.quantity).toLocaleString('fr-FR') + ' FCFA'
+                          }
                         </Typography>
                       </>
                     }

@@ -63,11 +63,21 @@ const CashierRegister: React.FC = () => {
     if (existingItem) {
       setCart(cart.map(item => 
         item.product._id === product._id 
-          ? { ...item, quantity: item.quantity + 1 }
+          ? { 
+              ...item, 
+              quantity: item.quantity + 1,
+              price: product.price <= 200 
+                ? product.price * (item.quantity + 1) * 25 // Lots de 25 pièces
+                : product.price * (item.quantity + 1) // Vente normale
+            }
           : item
       ));
     } else {
-      setCart([...cart, { product, quantity: 1, price: product.price }]);
+      setCart([...cart, { 
+        product, 
+        quantity: 1, 
+        price: product.price <= 200 ? product.price * 25 : product.price // Lots de 25 pièces
+      }]);
     }
     message.success(`${product.name} ajouté au panier`);
   };
@@ -80,7 +90,13 @@ const CashierRegister: React.FC = () => {
     
     setCart(cart.map(item => 
       item.product._id === productId 
-        ? { ...item, quantity, price: item.product.price * quantity }
+        ? { 
+            ...item, 
+            quantity, 
+            price: item.product.price <= 200 
+              ? item.product.price * quantity * 25 // Lots de 25 pièces
+              : item.product.price * quantity // Vente normale
+          }
         : item
     ));
   };
@@ -108,8 +124,22 @@ const CashierRegister: React.FC = () => {
       return;
     }
 
-    if (getTotalQuantity() < 25) {
-      message.error('Minimum de commande requis : 25 articles');
+    // Vérifier la quantité minimum basée sur le prix des produits
+    let totalQuantity = 0;
+    let hasLowPriceItems = false;
+    let lowPriceQuantity = 0;
+    
+    cart.forEach(item => {
+      if (item.product.price <= 200) {
+        hasLowPriceItems = true;
+        lowPriceQuantity += item.quantity;
+      }
+      totalQuantity += item.quantity;
+    });
+    
+    // Si on a des produits ≤ 200 FCFA, vérifier le minimum de 1 lot
+    if (hasLowPriceItems && lowPriceQuantity < 1) {
+      message.error(`Minimum de commande requis : 1 lot (25 pièces) pour les produits ≤ 200 FCFA. Les produits à bas prix se vendent par lots de 25 pièces. 1 = 25 pièces, 2 = 50 pièces, etc.`);
       return;
     }
 
@@ -197,7 +227,16 @@ const CashierRegister: React.FC = () => {
     {
       title: 'Total',
       key: 'total',
-      render: (record: CartItem) => `${record.price.toLocaleString('fr-FR')} FCFA`,
+      render: (record: CartItem) => (
+        <div>
+          <div>{record.price.toLocaleString('fr-FR')} FCFA</div>
+          {record.product.price <= 200 && (
+            <div style={{ fontSize: '12px', color: '#666' }}>
+              ({record.quantity} lot{record.quantity > 1 ? 's' : ''} de 25)
+            </div>
+          )}
+        </div>
+      ),
     },
     {
       title: 'Actions',
@@ -315,22 +354,49 @@ const CashierRegister: React.FC = () => {
                   <Text strong>Total: {getTotalPrice().toLocaleString('fr-FR')} FCFA</Text>
                 </div>
                 
-                {getTotalQuantity() < 25 && (
-                  <Alert
-                    message="Minimum requis"
-                    description="Minimum de commande : 25 articles"
-                    type="warning"
-                    showIcon
-                    style={{ marginTop: 16 }}
-                  />
-                )}
+                {(() => {
+                  let hasLowPriceItems = false;
+                  let lowPriceQuantity = 0;
+                  
+                  cart.forEach(item => {
+                    if (item.product.price <= 200) {
+                      hasLowPriceItems = true;
+                      lowPriceQuantity += item.quantity;
+                    }
+                  });
+                  
+                  if (hasLowPriceItems && lowPriceQuantity < 1) {
+                    return (
+                      <Alert
+                        message="Minimum requis"
+                        description="Minimum de commande : 1 lot (25 pièces) pour les produits ≤ 200 FCFA. Les produits à bas prix se vendent par lots de 25 pièces. 1 = 25 pièces, 2 = 50 pièces, etc."
+                        type="warning"
+                        showIcon
+                        style={{ marginTop: 16 }}
+                      />
+                    );
+                  }
+                  return null;
+                })()}
                 
                 <Button
                   type="primary"
                   size="large"
                   block
                   onClick={handleCheckout}
-                  disabled={cart.length === 0 || getTotalQuantity() < 25}
+                  disabled={cart.length === 0 || (() => {
+                    let hasLowPriceItems = false;
+                    let lowPriceQuantity = 0;
+                    
+                    cart.forEach(item => {
+                      if (item.product.price <= 200) {
+                        hasLowPriceItems = true;
+                        lowPriceQuantity += item.quantity;
+                      }
+                    });
+                    
+                    return hasLowPriceItems && lowPriceQuantity < 1;
+                  })()}
                   style={{ marginTop: 16 }}
                 >
                   Finaliser la commande

@@ -8,113 +8,120 @@ const formatNumber = (num: number) => {
 };
 
 export const generateOrderPDF = (order: Order) => {
-    const doc = new jsPDF();
+    const doc = new jsPDF('p', 'mm', 'a4'); // Format A4 portrait
     
-    // Titre principal
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text('HELLOGASSY', 105, 20, { align: 'center' });
+    // Fonction pour créer une facture
+    const createInvoice = (startX: number, startY: number, width: number, height: number) => {
+        // Ajouter le logo en haut
+        try {
+            doc.addImage('/logo.png', 'PNG', startX + 5, startY + 2, 20, 10);
+        } catch (error) {
+            console.log('Logo non trouvé, utilisation du texte uniquement');
+        }
+        
+        // Titre principal
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('HELLOGASSY', startX + width/2, startY + 8, { align: 'center' });
+        
+        // Sous-titre
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Ticket de commande', startX + width/2, startY + 15, { align: 'center' });
+        
+        // Informations de la commande
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Commande #${order._id?.slice(-8)}`, startX + 3, startY + 22);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString('fr-FR')}`, startX + 3, startY + 28);
+        doc.text(`Heure: ${new Date(order.createdAt).toLocaleTimeString('fr-FR')}`, startX + 3, startY + 34);
+        
+        // Détails client
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.text('Client:', startX + 3, startY + 42);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.text(`${order.personalInfo?.firstName} ${order.personalInfo.lastName}`, startX + 3, startY + 48);
+        doc.text(`Tel: ${order.personalInfo.phone}`, startX + 3, startY + 54);
+        
+        // Mode de livraison et paiement
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.text('Livraison:', startX + 3, startY + 62);
+        doc.setFont('helvetica', 'normal');
+        doc.text(order.shippingPrice === 0 ? 'Retrait' : 'Livraison', startX + 3, startY + 68);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text('Paiement:', startX + 3, startY + 75);
+        doc.setFont('helvetica', 'normal');
+        doc.text(order.paymentMethod, startX + 3, startY + 81);
+        
+        // Tableau des produits
+        const tableData = order.orderItems.map(item => [
+            item.name,
+            item.quantity.toString(),
+            `${formatNumber(item.price)}`,
+            `${formatNumber(item.quantity * item.price)}`
+        ]);
+        
+        autoTable(doc, {
+            startY: startY + 88,
+            head: [['Produit', 'Qté', 'Prix', 'Total']],
+            body: tableData,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [220, 53, 69], // Rouge
+                textColor: 255,
+                fontStyle: 'bold',
+                fontSize: 8
+            },
+            styles: {
+                fontSize: 7,
+                cellPadding: 2
+            },
+            columnStyles: {
+                0: { cellWidth: width * 0.4 - 6 }, // Produit
+                1: { cellWidth: width * 0.15 - 3, halign: 'center' }, // Quantité
+                2: { cellWidth: width * 0.2 - 3, halign: 'right' }, // Prix
+                3: { cellWidth: width * 0.25 - 3, halign: 'right' } // Total
+            },
+            margin: { left: startX + 3, right: 3 }
+        });
+        
+        // Calculer la position Y après le tableau
+        const finalY = (doc as any).lastAutoTable.finalY + 3;
+        
+        // Résumé financier
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.text('Total:', startX + 3, finalY);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.text(`${formatNumber(order.totalPrice)} FCFA`, startX + 3, finalY + 6);
+        
+        // Pied de page
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(5);
+        doc.text('Merci  et à bientôt !', startX + width/2, finalY + 12, { align: 'center' });
+    };
     
-    // Sous-titre
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Ticket de commande', 105, 30, { align: 'center' });
+    // Créer la première facture (haut)
+    createInvoice(0, 0, 210, 148); // Moitié haute de A4 portrait
     
-    // Informations de la commande
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`Commande #${order._id?.slice(-8)}`, 20, 45);
+    // Ligne de coupe horizontale au milieu
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.5);
+    doc.setLineDashPattern([5, 5], 0); // Ligne pointillée
+    doc.line(0, 148, 210, 148); // Ligne horizontale au milieu
     
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString('fr-FR')}`, 20, 55);
-    doc.text(`Heure: ${new Date(order.createdAt).toLocaleTimeString('fr-FR')}`, 20, 62);
-    
-    // Détails client
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.text('Détails Client:', 20, 80);
-    
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`Nom: ${order.personalInfo?.firstName} ${order.personalInfo.lastName}`, 20, 90);
-    doc.text(`Téléphone: ${order.personalInfo.phone}`, 20, 100);
-    doc.text(`Email: ${order.personalInfo.email}`, 20, 110);
-    
-    // Mode de livraison et paiement
-    doc.setFont('helvetica', 'bold');
-    doc.text('Mode de livraison:', 20, 125);
-    doc.setFont('helvetica', 'normal');
-    doc.text(order.shippingPrice === 0 ? 'Retrait Magasin' : 'Livraison', 20, 135);
-    
-    doc.setFont('helvetica', 'bold');
-    doc.text('Mode de paiement:', 20, 150);
-    doc.setFont('helvetica', 'normal');
-    doc.text(order.paymentMethod, 20, 160);
-    
-    // Tableau des produits
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.text('Produits commandés:', 20, 180);
-    
-    const tableData = order.orderItems.map(item => [
-        item.name,
-        item.quantity.toString(),
-        `${formatNumber(item.price)} FCFA`,
-        `${formatNumber(item.quantity * item.price)} FCFA`
-    ]);
-    
-    autoTable(doc, {
-        startY: 175,
-        head: [['Produit', 'Qté', 'Prix unit.', 'Total']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: {
-            fillColor: [41, 128, 185],
-            textColor: 255,
-            fontStyle: 'bold',
-            fontSize: 9
-        },
-        styles: {
-            fontSize: 8,
-            cellPadding: 2
-        },
-        columnStyles: {
-            0: { cellWidth: 60 }, // Produit - plus étroit
-            1: { cellWidth: 20, halign: 'center' }, // Quantité - plus étroit
-            2: { cellWidth: 40, halign: 'right' }, // Prix unitaire - plus large
-            3: { cellWidth: 45, halign: 'right' } // Total - plus large
-        },
-        margin: { left: 20, right: 20 }
-    });
-    
-    // Calculer la position Y après le tableau
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-    
-    // Résumé financier
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.text('Résumé:', 20, finalY);
-    
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`Sous-total: ${formatNumber(order.itemsPrice)} FCFA`, 20, finalY + 10);
-    doc.text(`Livraison: ${formatNumber(order.shippingPrice)} FCFA`, 20, finalY + 17);
-    
-    // Ligne de séparation
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, finalY + 22, 190, finalY + 22);
-    
-    // Total
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.text(`Total: ${formatNumber(order.totalPrice)} FCFA`, 20, finalY + 32);
-    
-    // Pied de page
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text('Merci pour votre commande !', 105, finalY + 50, { align: 'center' });
-    doc.text('HELLOGASSY - Votre satisfaction est notre priorité', 105, finalY + 57, { align: 'center' });
+    // Créer la deuxième facture (bas)
+    createInvoice(0, 148, 210, 148); // Moitié basse de A4 portrait
     
     // Générer le PDF
     const pdfBlob = doc.output('blob');
