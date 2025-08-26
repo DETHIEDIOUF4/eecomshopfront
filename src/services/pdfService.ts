@@ -12,22 +12,22 @@ export const generateOrderPDF = (order: Order) => {
     
     // Fonction pour créer une facture
     const createInvoice = (startX: number, startY: number, width: number, height: number) => {
-        // Ajouter le logo en haut
+        // Ajouter le logo en haut à droite
         try {
-            doc.addImage('/logo.png', 'PNG', startX + 5, startY + 2, 20, 10);
+            doc.addImage('/logo.png', 'PNG', startX + width - 25, startY + 2, 20, 10);
         } catch (error) {
             console.log('Logo non trouvé, utilisation du texte uniquement');
         }
         
         // Titre principal
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text('HELLOGASSY', startX + width/2, startY + 8, { align: 'center' });
+        // doc.setFontSize(14);
+        // doc.setFont('helvetica', 'bold');
+        // doc.text('HELLOGASSY', startX + width/2, startY + 8, { align: 'center' });
         
-        // Sous-titre
+        // Ticket de commande en haut
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        doc.text('Ticket de commande', startX + width/2, startY + 15, { align: 'center' });
+        doc.text('Ticket de commande', startX + 3, startY + 15);
         
         // Informations de la commande
         doc.setFontSize(8);
@@ -49,28 +49,51 @@ export const generateOrderPDF = (order: Order) => {
         doc.text(`${order.personalInfo?.firstName} ${order.personalInfo.lastName}`, startX + 3, startY + 48);
         doc.text(`Tel: ${order.personalInfo.phone}`, startX + 3, startY + 54);
         
+        // Note sur les lots de 25 pièces
+        const hasLowPriceItems = order.orderItems.some(item => item.price <= 200);
+        // if (hasLowPriceItems) {
+        //     doc.setFont('helvetica', 'bold');
+        //     doc.setFontSize(6);
+        //     doc.setTextColor(220, 53, 69); // Rouge
+        //     doc.text('Note: Les produits ≤ 200 FCFA se vendent par lots de 25 pièces', startX + 3, startY + 62);
+        //     doc.setTextColor(0, 0, 0); // Remettre en noir
+        // }
+        
         // Mode de livraison et paiement
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7);
-        doc.text('Livraison:', startX + 3, startY + 62);
+        doc.text('Livraison:', startX + 3, startY + (hasLowPriceItems ? 70 : 62));
         doc.setFont('helvetica', 'normal');
-        doc.text(order.shippingPrice === 0 ? 'Retrait' : 'Livraison', startX + 3, startY + 68);
+        doc.text(order.shippingPrice === 0 ? 'Retrait' : 'Livraison', startX + 3, startY + (hasLowPriceItems ? 76 : 68));
         
         doc.setFont('helvetica', 'bold');
-        doc.text('Paiement:', startX + 3, startY + 75);
+        doc.text('Paiement:', startX + 3, startY + (hasLowPriceItems ? 83 : 75));
         doc.setFont('helvetica', 'normal');
-        doc.text(order.paymentMethod, startX + 3, startY + 81);
+        doc.text(order.paymentMethod, startX + 3, startY + (81));
         
         // Tableau des produits
-        const tableData = order.orderItems.map(item => [
-            item.name,
-            item.quantity.toString(),
-            `${formatNumber(item.price)}`,
-            `${formatNumber(item.quantity * item.price)}`
-        ]);
+        const tableData = order.orderItems.map(item => {
+            if (item.price <= 200) {
+                // Pour les produits ≤ 200 FCFA, afficher les lots de 25 pièces
+                return [
+                    item.name,
+                    `${item.quantity} lot${item.quantity > 1 ? 's' : ''} de 25`,
+                    `${formatNumber(item.price)}`,
+                    `${formatNumber(item.quantity * item.price * 25)}`
+                ];
+            } else {
+                // Pour les produits > 200 FCFA, affichage normal
+                return [
+                    item.name,
+                    item.quantity.toString(),
+                    `${formatNumber(item.price)}`,
+                    `${formatNumber(item.quantity * item.price)}`
+                ];
+            }
+        });
         
         autoTable(doc, {
-            startY: startY + 88,
+            startY: startY + (hasLowPriceItems ? 96 : 88),
             head: [['Produit', 'Qté', 'Prix', 'Total']],
             body: tableData,
             theme: 'grid',
