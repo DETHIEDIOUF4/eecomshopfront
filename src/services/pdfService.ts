@@ -62,12 +62,12 @@ export const generateOrderPDF = (order: Order) => {
         // Mode de livraison et paiement
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7);
-        doc.text('Livraison:', startX + 3, startY + (hasLowPriceItems ? 70 : 62));
+        doc.text('Livraison:', startX + 3, startY + ( 62));
         doc.setFont('helvetica', 'normal');
-        doc.text(order.shippingPrice === 0 ? 'Retrait' : 'Livraison', startX + 3, startY + (hasLowPriceItems ? 76 : 68));
+        doc.text(order.shippingPrice === 0 ? 'Retrait' : 'Livraison', startX + 3, startY + ( 68));
         
         doc.setFont('helvetica', 'bold');
-        doc.text('Paiement:', startX + 3, startY + (hasLowPriceItems ? 83 : 75));
+        doc.text('Paiement:', startX + 3, startY + (75));
         doc.setFont('helvetica', 'normal');
         doc.text(order.paymentMethod, startX + 3, startY + (81));
         
