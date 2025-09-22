@@ -53,14 +53,15 @@ const ProductManagement: React.FC = () => {
 
     const handleEditProduct = (product: any) => {
         setEditingProduct(product);
+        const nutritional = product?.nutritionalInfo || {};
         form.setFieldsValue({
             ...product,
-            nutritionalInfo: {
-                calories: product.nutritionalInfo.calories,
-                proteins: product.nutritionalInfo.proteins,
-                carbohydrates: product.nutritionalInfo.carbohydrates,
-                fats: product.nutritionalInfo.fats,
-            },
+            nutritionalInfo: Object.keys(nutritional).length ? {
+                calories: nutritional.calories,
+                proteins: nutritional.proteins,
+                carbohydrates: nutritional.carbohydrates,
+                fats: nutritional.fats,
+            } : undefined,
         });
         setFileList(product.images.map((url: string) => ({
             uid: url,
@@ -84,16 +85,22 @@ const ProductManagement: React.FC = () => {
     const handleModalOk = async () => {
         try {
             const values = await form.validateFields();
-            const productData = {
+            const nutritional = values.nutritionalInfo || {};
+            const hasNutritional = ['calories','proteins','carbohydrates','fats'].some(k => nutritional?.[k] !== undefined && nutritional?.[k] !== null && nutritional?.[k] !== '');
+            const productData: any = {
                 ...values,
-                nutritionalInfo: {
-                    calories: values.nutritionalInfo.calories,
-                    proteins: values.nutritionalInfo.proteins,
-                    carbohydrates: values.nutritionalInfo.carbohydrates,
-                    fats: values.nutritionalInfo.fats,
-                },
                 images: fileList.map(file => file.url || file.response?.url)
             };
+            if (hasNutritional) {
+                productData.nutritionalInfo = {
+                    calories: nutritional.calories,
+                    proteins: nutritional.proteins,
+                    carbohydrates: nutritional.carbohydrates,
+                    fats: nutritional.fats,
+                };
+            } else {
+                delete productData.nutritionalInfo;
+            }
 
             if (editingProduct) {
                 await productService.updateProduct(editingProduct._id, productData);
@@ -286,7 +293,6 @@ const ProductManagement: React.FC = () => {
                     <Form.Item
                         name="allergens"
                         label="Allergènes"
-                        rules={[{ required: true, message: 'Veuillez entrer les allergènes' }]}
                     >
                         <Select mode="tags" style={{ width: '100%' }} placeholder="Ajouter des allergènes" />
                     </Form.Item>
@@ -294,7 +300,7 @@ const ProductManagement: React.FC = () => {
                     <Form.Item
                         name={['nutritionalInfo', 'calories']}
                         label="Calories"
-                        rules={[{ required: true, message: 'Veuillez entrer le nombre de calories' }]}
+                        rules={[]}
                     >
                         <InputNumber min={0} style={{ width: '100%' }} />
                     </Form.Item>
@@ -302,7 +308,7 @@ const ProductManagement: React.FC = () => {
                     <Form.Item
                         name={['nutritionalInfo', 'proteins']}
                         label="Protéines (g)"
-                        rules={[{ required: true, message: 'Veuillez entrer la quantité de protéines' }]}
+                        rules={[]}
                     >
                         <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
                     </Form.Item>
@@ -310,7 +316,7 @@ const ProductManagement: React.FC = () => {
                     <Form.Item
                         name={['nutritionalInfo', 'carbohydrates']}
                         label="Glucides (g)"
-                        rules={[{ required: true, message: 'Veuillez entrer la quantité de glucides' }]}
+                        rules={[]}
                     >
                         <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
                     </Form.Item>
@@ -318,7 +324,7 @@ const ProductManagement: React.FC = () => {
                     <Form.Item
                         name={['nutritionalInfo', 'fats']}
                         label="Lipides (g)"
-                        rules={[{ required: true, message: 'Veuillez entrer la quantité de lipides' }]}
+                        rules={[]}
                     >
                         <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
                     </Form.Item>

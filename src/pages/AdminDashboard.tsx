@@ -1,29 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Layout, Menu, theme, Drawer, Button } from 'antd';
-import { MenuOutlined, ShoppingCartOutlined, AppstoreOutlined, OrderedListOutlined, DollarOutlined } from '@ant-design/icons';
+import { MenuOutlined, ShoppingCartOutlined, AppstoreOutlined, OrderedListOutlined } from '@ant-design/icons';
 import CategoryManagement from '../components/admin/CategoryManagement';
 import ProductManagement from '../components/admin/ProductManagement';
 import OrderManagement from '../components/admin/OrderManagement';
 import StatisticsDashboard from '../components/admin/StatisticsDashboard';
-import CashierRegister from '../components/admin/CashierRegister';
-import { notificationService } from '../services/notificationService';
 
 const { Header, Content } = Layout;
 
 const AdminDashboard: React.FC = () => {
     const [selectedMenu, setSelectedMenu] = useState('statistiques');
     const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
-
-    // Démarrer l'écoute des notifications au chargement du composant
-    useEffect(() => {
-        notificationService.requestNotificationPermission();
-        notificationService.startListeningForOrders();
-
-        // Nettoyer à la fermeture
-        return () => {
-            notificationService.stopListening();
-        };
-    }, []);
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
@@ -31,35 +18,29 @@ const AdminDashboard: React.FC = () => {
     const menuItems = [
         {
             key: 'statistiques',
-            label: 'Tableau de bord',
+            label: 'Statistiques',
             icon: <OrderedListOutlined />
         },
         {
-            key: 'caisse',
-            label: 'Caisse',
-            icon: <DollarOutlined />
-        },
-        {
             key: 'products',
-            label: 'Produits',
+            label: 'Gestion des produits',
             icon: <ShoppingCartOutlined />
         },
         {
             key: 'categories',
-            label: 'Catégories',
+            label: 'Gestion des catégories',
             icon: <AppstoreOutlined />
         },
         {
             key: 'orders',
-            label: 'Commandes',
+            label: 'Gestion des commandes',
             icon: <OrderedListOutlined />
         },
+      
     ];
 
     const renderContent = () => {
         switch (selectedMenu) {
-            case 'caisse':
-                return <CashierRegister />;
             case 'products':
                 return <ProductManagement />;
             case 'categories':
@@ -67,7 +48,7 @@ const AdminDashboard: React.FC = () => {
             case 'orders':
                 return <OrderManagement />;
             case 'statistiques':
-                return <StatisticsDashboard/>;
+                    return <StatisticsDashboard/>;
             default:
                 return <StatisticsDashboard />;
         }

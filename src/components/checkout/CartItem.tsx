@@ -35,7 +35,11 @@ const CartItems: React.FC = () => {
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     if (newQuantity >= 1) {
-      dispatch(updateQuantity({ productId, quantity: newQuantity }));
+      try {
+        dispatch(updateQuantity({ productId, quantity: newQuantity }));
+      } catch (error: any) {
+        alert(error.message);
+      }
     } else {
       dispatch(removeFromCart(productId));
     }

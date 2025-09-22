@@ -64,13 +64,6 @@ const CartReview: React.FC = () => {
     phone: ''
   });
 
-  const [personalInfoErrors, setPersonalInfoErrors] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: ''
-  });
-
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
       handlePlaceOrder();
@@ -95,124 +88,18 @@ const CartReview: React.FC = () => {
   };
 
   const handlePersonalInfoChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
     setPersonalInfo({
       ...personalInfo,
-      [field]: value
+      [field]: event.target.value
     });
-
-    // Effacer l'erreur quand l'utilisateur commence à taper
-    if (personalInfoErrors[field as keyof typeof personalInfoErrors]) {
-      setPersonalInfoErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
-    }
-  };
-
-  const handlePersonalInfoBlur = (field: string) => () => {
-    const value = personalInfo[field as keyof typeof personalInfo];
-    let errorMessage = '';
-    
-    // Validation des champs obligatoires
-    if (field === 'firstName' && !value.trim()) {
-      errorMessage = 'Le prénom est obligatoire';
-    }
-    
-    if (field === 'lastName' && !value.trim()) {
-      errorMessage = 'Le nom est obligatoire';
-    }
-    
-    if (field === 'email') {
-      if (!value.trim()) {
-        errorMessage = 'L\'email est obligatoire';
-      } else if (!validateEmail(value)) {
-        errorMessage = 'Veuillez saisir une adresse email valide';
-      }
-    }
-    
-    if (field === 'phone') {
-      if (!value.trim()) {
-        errorMessage = 'Le numéro de téléphone est obligatoire';
-      } else if (!validatePhone(value)) {
-        errorMessage = 'Veuillez saisir un numéro de téléphone valide (ex: 77 123 45 67)';
-      }
-    }
-
-    setPersonalInfoErrors(prev => ({
-      ...prev,
-      [field]: errorMessage
-    }));
-  };
-
-  // Validation email
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Validation téléphone (format français/sénégalais)
-  const validatePhone = (phone: string) => {
-    // Nettoyer le numéro (enlever espaces, tirets, etc.)
-    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
-    
-    // Vérifier si c'est un numéro sénégalais (commence par +221 ou 221)
-    if (cleanPhone.startsWith('+221') || cleanPhone.startsWith('221')) {
-      const senegalPhone = cleanPhone.replace(/^(\+?221)/, '');
-      return /^7[0-9]{8}$/.test(senegalPhone);
-    }
-    
-    // Vérifier si c'est un numéro français (commence par +33 ou 33)
-    if (cleanPhone.startsWith('+33') || cleanPhone.startsWith('33')) {
-      const francePhone = cleanPhone.replace(/^(\+?33)/, '');
-      return /^[1-9][0-9]{8}$/.test(francePhone);
-    }
-    
-    // Vérifier si c'est un numéro local (7 chiffres pour Sénégal, 10 chiffres pour France)
-    if (cleanPhone.length === 9 && cleanPhone.startsWith('7')) {
-      return /^7[0-9]{8}$/.test(cleanPhone);
-    }
-    
-    if (cleanPhone.length === 10) {
-      return /^[1-9][0-9]{9}$/.test(cleanPhone);
-    }
-    
-    return false;
   };
 
   const validateStep = () => {
     switch (activeStep) {
       case 0:
-        // Vérifier la quantité minimum basée sur le prix des produits
-        let totalQuantity = 0;
-        let hasLowPriceItems = false;
-        let lowPriceQuantity = 0;
-        
-        items.forEach(item => {
-          if (item.product.price <= 200) {
-            // Pour les produits ≤ 200 FCFA, minimum 1 lot (25 pièces)
-            hasLowPriceItems = true;
-            lowPriceQuantity += item.quantity;
-          }
-          totalQuantity += item.quantity;
-        });
-        
-        // Si on a des produits ≤ 200 FCFA, vérifier le minimum de 1 lot
-        if (hasLowPriceItems) {
-          return items.length > 0 && lowPriceQuantity >= 1;
-        }
-        
-        // Sinon, juste vérifier qu'il y a au moins 1 produit
-        return items.length > 0 && totalQuantity >= 1;
+        return items.length > 0;
       case 1:
-        return (
-          personalInfo.firstName.trim() !== '' &&
-          personalInfo.lastName.trim() !== '' &&
-          personalInfo.email.trim() !== '' &&
-          validateEmail(personalInfo.email) &&
-          personalInfo.phone.trim() !== '' &&
-          validatePhone(personalInfo.phone)
-        );
+        return Object.values(personalInfo).every(value => value.trim() !== '');
       case 2:
         if (deliveryMethod === 'delivery') {
           return Object.values(deliveryAddress).every(value => value.trim() !== '');
@@ -276,29 +163,6 @@ const CartReview: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               Articles dans votre panier
             </Typography>
-            {(() => {
-              let totalQuantity = 0;
-              let hasLowPriceItems = false;
-              let lowPriceQuantity = 0;
-              
-              items.forEach(item => {
-                if (item.product.price <= 200) {
-                  hasLowPriceItems = true;
-                  lowPriceQuantity += item.quantity;
-                }
-                totalQuantity += item.quantity;
-              });
-              
-              if (hasLowPriceItems && lowPriceQuantity < 1) {
-                return (
-                  <Alert severity="warning" sx={{ mb: 2 }}>
-                    Minimum de commande requis : 1 lot (25 pièces) pour les produits ≤ 200 FCFA. 
-                    Les produits à bas prix se vendent par lots de 25 pièces. 1 = 25 pièces, 2 = 50 pièces, etc.
-                  </Alert>
-                );
-              }
-              return null;
-            })()}
             <CartItems />
           </Box>
         );
@@ -316,9 +180,6 @@ const CartReview: React.FC = () => {
                   label="Prénom"
                   value={personalInfo.firstName}
                   onChange={handlePersonalInfoChange('firstName')}
-                  onBlur={handlePersonalInfoBlur('firstName')}
-                  error={!!personalInfoErrors.firstName}
-                  helperText={personalInfoErrors.firstName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -328,9 +189,6 @@ const CartReview: React.FC = () => {
                   label="Nom"
                   value={personalInfo.lastName}
                   onChange={handlePersonalInfoChange('lastName')}
-                  onBlur={handlePersonalInfoBlur('lastName')}
-                  error={!!personalInfoErrors.lastName}
-                  helperText={personalInfoErrors.lastName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -341,10 +199,6 @@ const CartReview: React.FC = () => {
                   type="email"
                   value={personalInfo.email}
                   onChange={handlePersonalInfoChange('email')}
-                  onBlur={handlePersonalInfoBlur('email')}
-                  error={!!personalInfoErrors.email}
-                  helperText={personalInfoErrors.email}
-                  placeholder="exemple@email.com"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -354,10 +208,6 @@ const CartReview: React.FC = () => {
                   label="Téléphone"
                   value={personalInfo.phone}
                   onChange={handlePersonalInfoChange('phone')}
-                  onBlur={handlePersonalInfoBlur('phone')}
-                  error={!!personalInfoErrors.phone}
-                  helperText={personalInfoErrors.phone}
-                  placeholder="77 123 45 67"
                 />
               </Grid>
             </Grid>
@@ -552,7 +402,7 @@ const CartReview: React.FC = () => {
           </Button>
           <Button
             variant="contained"
-            color={!validateStep() ? "error" : "primary"}
+            color="primary"
             onClick={handleNext}
             disabled={!validateStep() || isLoading}
           >
@@ -560,20 +410,6 @@ const CartReview: React.FC = () => {
               <CircularProgress size={24} color="inherit" />
             ) : activeStep === steps.length - 1 ? (
               'Valider la commande'
-            ) : activeStep === 0 && (() => {
-              let hasLowPriceItems = false;
-              let lowPriceQuantity = 0;
-              
-              items.forEach(item => {
-                if (item.product.price <= 200) {
-                  hasLowPriceItems = true;
-                  lowPriceQuantity += item.quantity;
-                }
-              });
-              
-              return hasLowPriceItems && lowPriceQuantity < 1;
-            })() ? (
-              'Minimum 1 lot requis (≤200 FCFA)'
             ) : (
               'Suivant'
             )}

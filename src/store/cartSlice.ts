@@ -13,6 +13,20 @@ const cartSlice = createSlice({
     addToCart: (state, action: PayloadAction<CartItem>) => {
       const existingItem = state.items.find(item => item.product._id === action.payload.product._id);
       
+      // Vérifier le stock disponible
+      const requestedQuantity = action.payload.quantity;
+      const currentQuantity = existingItem ? existingItem.quantity : 0;
+      const totalRequested = currentQuantity + requestedQuantity;
+      
+      // Pour les produits ≤ 200 FCFA, vérifier le stock en lots de 25
+      const stockCheck = action.payload.product.price <= 200 
+        ? totalRequested * 25 <= action.payload.product.stock
+        : totalRequested <= action.payload.product.stock;
+      
+      if (!stockCheck) {
+        throw new Error(`Stock insuffisant. Disponible: ${action.payload.product.stock} ${action.payload.product.price <= 200 ? 'pièces' : 'unités'}`);
+      }
+      
       if (existingItem) {
         existingItem.quantity += action.payload.quantity;
       } else {
@@ -44,6 +58,16 @@ const cartSlice = createSlice({
     updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
       const item = state.items.find(item => item.product._id === action.payload.productId);
       if (item) {
+        // Vérifier le stock disponible
+        const requestedQuantity = action.payload.quantity;
+        const stockCheck = item.product.price <= 200 
+          ? requestedQuantity * 25 <= item.product.stock
+          : requestedQuantity <= item.product.stock;
+        
+        if (!stockCheck) {
+          throw new Error(`Stock insuffisant. Disponible: ${item.product.stock} ${item.product.price <= 200 ? 'pièces' : 'unités'}`);
+        }
+        
         item.quantity = action.payload.quantity;
         state.total = state.items.reduce((total, item) => {
           if (item.product.price <= 200) {

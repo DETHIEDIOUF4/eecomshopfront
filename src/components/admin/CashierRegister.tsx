@@ -60,6 +60,23 @@ const CashierRegister: React.FC = () => {
   const addToCart = (product: Product) => {
     const existingItem = cart.find(item => item.product._id === product._id);
     
+    // Vérifier le stock disponible
+    const currentQuantity = existingItem ? existingItem.quantity : 0;
+    const newQuantity = currentQuantity + 1;
+    
+    // Pour les produits ≤ 200 FCFA, vérifier le stock en lots de 25
+    const stockCheck = product.price <= 200 
+      ? newQuantity * 25 <= product.stock
+      : newQuantity <= product.stock;
+    
+    if (!stockCheck) {
+      const maxQuantity = product.price <= 200 
+        ? Math.floor(product.stock / 25)
+        : product.stock;
+      message.error(`Stock insuffisant. Maximum disponible: ${maxQuantity} ${product.price <= 200 ? 'lot(s)' : 'unité(s)'}`);
+      return;
+    }
+    
     if (existingItem) {
       setCart(cart.map(item => 
         item.product._id === product._id 
@@ -85,6 +102,22 @@ const CashierRegister: React.FC = () => {
   const updateQuantity = (productId: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
+      return;
+    }
+    
+    const item = cart.find(item => item.product._id === productId);
+    if (!item) return;
+    
+    // Vérifier le stock disponible
+    const stockCheck = item.product.price <= 200 
+      ? quantity * 25 <= item.product.stock
+      : quantity <= item.product.stock;
+    
+    if (!stockCheck) {
+      const maxQuantity = item.product.price <= 200 
+        ? Math.floor(item.product.stock / 25)
+        : item.product.stock;
+      message.error(`Stock insuffisant. Maximum disponible: ${maxQuantity} ${item.product.price <= 200 ? 'lot(s)' : 'unité(s)'}`);
       return;
     }
     
@@ -289,9 +322,11 @@ const CashierRegister: React.FC = () => {
                         type="primary"
                         icon={<PlusOutlined />}
                         onClick={() => addToCart(product)}
+                        disabled={product.stock === 0}
                         size="small"
+                        danger={product.stock === 0}
                       >
-                        Ajouter
+                        {product.stock === 0 ? 'Rupture' : 'Ajouter'}
                       </Button>
                     ]}
                   >
@@ -302,6 +337,12 @@ const CashierRegister: React.FC = () => {
                           <Text strong>{product.price.toLocaleString('fr-FR')} FCFA</Text>
                           <br />
                           <Tag color="blue">{product.category}</Tag>
+                          <br />
+                          <Tag 
+                            color={product.stock === 0 ? 'red' : product.stock <= 10 ? 'orange' : 'green'}
+                          >
+                            Stock: {product.stock}
+                          </Tag>
                         </div>
                       }
                     />

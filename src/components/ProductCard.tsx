@@ -8,7 +8,9 @@ import {
   Box,
   IconButton,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Alert,
+  Chip
 } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import InfoIcon from '@mui/icons-material/Info';
@@ -26,6 +28,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Fonction pour déterminer le statut du stock
+  const getStockStatus = () => {
+    if (product.stock === 0) {
+      return { type: 'error', message: 'Rupture de stock', color: 'error' as const };
+    } else if (product.stock <= 10) {
+      return { type: 'warning', message: `Stock faible (${product.stock} restant)`, color: 'warning' as const };
+    }
+    return null;
+  };
+
+  const stockStatus = getStockStatus();
 
   const handleCardClick = (event: React.MouseEvent<HTMLDivElement>) => {
     onViewDetails(product);
@@ -63,20 +77,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
           alt={product.name}
           sx={{ objectFit: 'cover' }}
         />
-        {/* <IconButton
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            '&:hover': {
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            }
-          }}
-          onClick={handleInfoClick}
-        >
-          <InfoIcon />
-        </IconButton> */}
+        {stockStatus && (
+          <Chip
+            label={stockStatus.message}
+            color={stockStatus.color}
+            size="small"
+            sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              fontWeight: 'bold',
+              fontSize: '0.75rem'
+            }}
+          />
+        )}
       </Box>
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant="h6" component="div">
@@ -91,18 +105,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
           </Typography>
           <Button
             variant="contained"
-            color="primary"
-            startIcon={  <AddShoppingCartIcon style={{ color: 'black' }} />}
-            
+            color={product.stock === 0 ? "error" : "primary"}
+            startIcon={<AddShoppingCartIcon style={{ color: 'black' }} />}
             onClick={handleAddToCartClick}
+            disabled={product.stock === 0}
             sx={{
-              backgroundColor: theme.palette.primary.main,
+              backgroundColor: product.stock === 0 ? theme.palette.error.main : theme.palette.primary.main,
               '&:hover': {
-                backgroundColor: theme.palette.primary.dark,
+                backgroundColor: product.stock === 0 ? theme.palette.error.dark : theme.palette.primary.dark,
               }
             }}
           >
-            Ajouter
+            {product.stock === 0 ? 'Rupture' : 'Ajouter'}
           </Button>
         </Box>
       </CardContent>

@@ -115,61 +115,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, open, onClose })
                 </Box>
               </Box>
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Allergènes
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {product.allergens?.map((allergen, index) => (
-                    <Chip
-                      key={index}
-                      label={allergen}
-                      color="error"
-                      variant="outlined"
-                    />
-                  ))}
-                </Box>
-              </Box>
+              
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Informations nutritionnelles
-                </Typography>
-                <Grid container spacing={2}>
-                  {product.nutritionalInfo?.calories && (
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="subtitle2">Calories</Typography>
-                        <Typography variant="h6">{product.nutritionalInfo.calories} kcal</Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                  {product.nutritionalInfo?.proteins && (
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="subtitle2">Protéines</Typography>
-                        <Typography variant="h6">{product.nutritionalInfo.proteins}g</Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                  {product.nutritionalInfo?.carbohydrates && (
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="subtitle2">Glucides</Typography>
-                        <Typography variant="h6">{product.nutritionalInfo.carbohydrates}g</Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                  {product.nutritionalInfo?.fats && (
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="subtitle2">Lipides</Typography>
-                        <Typography variant="h6">{product.nutritionalInfo.fats}g</Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                </Grid>
-              </Box>
+              
 
               {product.preparationTime && (
                 <Box sx={{ mb: 3 }}>

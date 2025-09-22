@@ -11,12 +11,12 @@ export interface Product {
     category: string;
     ingredients: string[];
     preparationTime: number;
-    allergens: string[];
-    nutritionalInfo: {
-        calories: number;
-        protein: number;
-        carbs: number;
-        fat: number;
+    allergens?: string[];
+    nutritionalInfo?: {
+        calories?: number;
+        protein?: number;
+        carbs?: number;
+        fat?: number;
     };
     stock: number;
     images: string[];
@@ -47,12 +47,12 @@ export const productService = {
         category: string;
         ingredients: string[];
         preparationTime: string;
-        allergens: string[];
-        nutritionalInfo: {
-            calories: number;
-            proteins: number;
-            carbohydrates: number;
-            fats: number;
+        allergens?: string[];
+        nutritionalInfo?: {
+            calories?: number;
+            proteins?: number;
+            carbohydrates?: number;
+            fats?: number;
         };
         stock: number;
         images: string[];
@@ -73,10 +73,10 @@ export const productService = {
         preparationTime?: string;
         allergens?: string[];
         nutritionalInfo?: {
-            calories: number;
-            proteins: number;
-            carbohydrates: number;
-            fats: number;
+            calories?: number;
+            proteins?: number;
+            carbohydrates?: number;
+            fats?: number;
         };
         stock?: number;
         images?: string[];

@@ -8,12 +8,12 @@ export interface Product {
   category: string;
   ingredients: string[];
   preparationTime: string;
-  allergens: string[];
-  nutritionalInfo: {
-    calories: number;
-    proteins: number;
-    carbohydrates: number;
-    fats: number;
+  allergens?: string[];
+  nutritionalInfo?: {
+    calories?: number;
+    proteins?: number;
+    carbohydrates?: number;
+    fats?: number;
   };
   stock: number;
   rating: number;
