@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Card, Statistic, Spin, Typography, Table, Button, Tag, message, DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import {
@@ -52,11 +52,7 @@ const StatisticsDashboard: React.FC = () => {
         paymentStatus: []
     });
 
-    useEffect(() => {
-        fetchStatistics();
-    }, [dateRange]);
-
-    const fetchStatistics = async () => {
+    const fetchStatistics = useCallback(async () => {
         try {
             setLoading(true);
             const orders = await getAllOrders();
@@ -135,7 +131,11 @@ const StatisticsDashboard: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [dateRange]);
+
+    useEffect(() => {
+        fetchStatistics();
+    }, [fetchStatistics]);
 
     const handleMarkAsPaid = async (orderId: string) => {
         try {
@@ -214,7 +214,7 @@ const StatisticsDashboard: React.FC = () => {
             dataIndex: 'isPaid',
             key: 'isPaid',
             render: (isPaid: boolean) => (
-                <Tag color={isPaid ? 'green' : 'red'}>
+                <Tag color={isPaid ? 'green' : 'volcano'}>
                     {isPaid ? 'Payé' : 'Non payé'}
                 </Tag>
             ),
@@ -334,7 +334,7 @@ const StatisticsDashboard: React.FC = () => {
                         <Statistic
                             title="Revenu Total"
                             value={statistics.totalRevenue}
-                            valueStyle={{ color: '#d81b60', fontWeight: 700 }}
+                            valueStyle={{ color: '#0ea5e9', fontWeight: 700 }}
                             formatter={(value) => `${value.toLocaleString('fr-FR')} FCFA`}
                         />
                     </Card>

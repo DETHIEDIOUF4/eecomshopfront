@@ -18,11 +18,13 @@ import {
   Alert
 } from 'antd';
 import { SearchOutlined, PlusOutlined, DeleteOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Product, productService } from '../../services/productService';
+import { productService } from '../../services/productService';
+import { Product } from '../../types';
+import { useDispatch } from 'react-redux';
+import { addToCart as addToCartAction, updateQuantity as updateCartQuantity, removeFromCart as removeFromCartAction, clearCart as clearCartAction } from '../../store/cartSlice';
 import { createOrder } from '../../services/orderService';
 import { notificationService } from '../../services/notificationService';
 
-const { Option } = Select;
 const { Title, Text } = Typography;
 
 interface CartItem {
@@ -43,6 +45,8 @@ const CashierRegister: React.FC = () => {
     email: '',
     phone: ''
   });
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchProducts();
@@ -96,6 +100,12 @@ const CashierRegister: React.FC = () => {
         price: product.price <= 200 ? product.price * 25 : product.price // Lots de 25 pièces
       }]);
     }
+    // Sync with global cart (header cart)
+    try {
+      dispatch(addToCartAction({ product, quantity: 1 }));
+    } catch (e) {
+      // ignore sync errors; local cart already updated
+    }
     message.success(`${product.name} ajouté au panier`);
   };
 
@@ -132,14 +142,24 @@ const CashierRegister: React.FC = () => {
           }
         : item
     ));
+    // Sync with global cart
+    try {
+      dispatch(updateCartQuantity({ productId, quantity }));
+    } catch (e) {}
   };
 
   const removeFromCart = (productId: string) => {
     setCart(cart.filter(item => item.product._id !== productId));
+    try {
+      dispatch(removeFromCartAction(productId));
+    } catch (e) {}
   };
 
   const clearCart = () => {
     setCart([]);
+    try {
+      dispatch(clearCartAction());
+    } catch (e) {}
     message.info('Panier vidé');
   };
 
@@ -158,7 +178,6 @@ const CashierRegister: React.FC = () => {
     }
 
     // Vérifier la quantité minimum basée sur le prix des produits
-    let totalQuantity = 0;
     let hasLowPriceItems = false;
     let lowPriceQuantity = 0;
     
@@ -167,7 +186,7 @@ const CashierRegister: React.FC = () => {
         hasLowPriceItems = true;
         lowPriceQuantity += item.quantity;
       }
-      totalQuantity += item.quantity;
+      
     });
     
     // Si on a des produits ≤ 200 FCFA, vérifier le minimum de 1 lot
@@ -210,7 +229,7 @@ const CashierRegister: React.FC = () => {
         totalPrice: getTotalPrice()
       };
 
-      const createdOrder = await createOrder(orderData);
+      await createOrder(orderData);
       message.success('Commande créée avec succès !');
       
       // Déclencher la notification sonore pour tous les appareils connectés
@@ -218,6 +237,9 @@ const CashierRegister: React.FC = () => {
       
       // Réinitialiser
       setCart([]);
+      try {
+        dispatch(clearCartAction());
+      } catch (e) {}
       setCustomerInfo({ firstName: '', lastName: '', email: '', phone: '' });
       setCustomerModalVisible(false);
     } catch (error) {
@@ -339,7 +361,7 @@ const CashierRegister: React.FC = () => {
                           <Tag color="blue">{product.category}</Tag>
                           <br />
                           <Tag 
-                            color={product.stock === 0 ? 'red' : product.stock <= 10 ? 'orange' : 'green'}
+                            color={product.stock === 0 ? 'volcano' : product.stock <= 10 ? 'orange' : 'green'}
                           >
                             Stock: {product.stock}
                           </Tag>

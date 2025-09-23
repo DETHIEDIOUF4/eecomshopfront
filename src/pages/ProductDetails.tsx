@@ -12,8 +12,7 @@ import {
   Alert,
   IconButton,
   Chip,
-  TextField,
-  InputAdornment
+  TextField
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
@@ -139,13 +138,13 @@ const ProductDetails: React.FC = () => {
 
             <Box sx={{ mb: 2 }}>
               <Typography variant="h6" gutterBottom>
-                Ingrédients
+                Caractéristiques
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {product.ingredients.map((ingredient, index) => (
+                {product.features?.map((feature, index) => (
                   <Chip
                     key={index}
-                    label={ingredient}
+                    label={feature}
                     color="primary"
                     variant="outlined"
                   />
@@ -157,25 +156,40 @@ const ProductDetails: React.FC = () => {
 
             
 
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Temps de préparation
-              </Typography>
-              <Chip
-                label={`${product.preparationTime} minutes`}
-                color="primary"
-                variant="filled"
-              />
-            </Box>
+            {(product.brand || product.modelName) && (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="h6" gutterBottom>
+                  Modèle
+                </Typography>
+                <Chip
+                  label={`${product.brand ?? ''} ${product.modelName ?? ''}`.trim()}
+                  color="primary"
+                  variant="filled"
+                />
+              </Box>
+            )}
+
+            {product.specs && (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="h6" gutterBottom>
+                  Spécifications
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {Object.entries(product.specs).map(([key, value]) => (
+                    <Chip key={key} label={`${key}: ${value}`} variant="outlined" />
+                  ))}
+                </Box>
+              </Box>
+            )}
 
             <Box sx={{ mt: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <IconButton 
                   onClick={() => handleQuantityChange(quantity - 1)}
                   sx={{ 
-                    backgroundColor: 'rgba(227, 30, 36, 0.1)',
+                    backgroundColor: 'rgba(14, 165, 233, 0.12)',
                     '&:hover': {
-                      backgroundColor: 'rgba(227, 30, 36, 0.2)',
+                      backgroundColor: 'rgba(14, 165, 233, 0.2)',
                     }
                   }}
                 >
@@ -191,9 +205,9 @@ const ProductDetails: React.FC = () => {
                 <IconButton 
                   onClick={() => handleQuantityChange(quantity + 1)}
                   sx={{ 
-                    backgroundColor: 'rgba(227, 30, 36, 0.1)',
+                    backgroundColor: 'rgba(14, 165, 233, 0.12)',
                     '&:hover': {
-                      backgroundColor: 'rgba(227, 30, 36, 0.2)',
+                      backgroundColor: 'rgba(14, 165, 233, 0.2)',
                     }
                   }}
                 >

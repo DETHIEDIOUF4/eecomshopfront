@@ -6,15 +6,11 @@ export interface Product {
   price: number;
   images: string[];
   category: string;
-  ingredients: string[];
-  preparationTime: string;
-  allergens?: string[];
-  nutritionalInfo?: {
-    calories?: number;
-    proteins?: number;
-    carbohydrates?: number;
-    fats?: number;
-  };
+  brand: string;
+  modelName: string;
+  features: string[];
+  warrantyMonths?: number;
+  specs?: Record<string, string | number>;
   stock: number;
   rating: number;
   numReviews: number;

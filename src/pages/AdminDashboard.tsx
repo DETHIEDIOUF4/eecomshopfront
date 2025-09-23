@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Layout, Menu, theme, Drawer, Button } from 'antd';
-import { MenuOutlined, ShoppingCartOutlined, AppstoreOutlined, OrderedListOutlined } from '@ant-design/icons';
+import { MenuOutlined, ShoppingCartOutlined, AppstoreOutlined, OrderedListOutlined, DollarOutlined } from '@ant-design/icons';
 import CategoryManagement from '../components/admin/CategoryManagement';
 import ProductManagement from '../components/admin/ProductManagement';
 import OrderManagement from '../components/admin/OrderManagement';
 import StatisticsDashboard from '../components/admin/StatisticsDashboard';
+import CashierRegister from '../components/admin/CashierRegister';
 
 const { Header, Content } = Layout;
 
@@ -36,7 +37,12 @@ const AdminDashboard: React.FC = () => {
             label: 'Gestion des commandes',
             icon: <OrderedListOutlined />
         },
-      
+        {
+            key: 'cashier',
+            label: 'Caisse',
+            icon: <DollarOutlined />
+        },
+        
     ];
 
     const renderContent = () => {
@@ -47,6 +53,8 @@ const AdminDashboard: React.FC = () => {
                 return <CategoryManagement />;
             case 'orders':
                 return <OrderManagement />;
+            case 'cashier':
+                return <CashierRegister />;
             case 'statistiques':
                     return <StatisticsDashboard/>;
             default:

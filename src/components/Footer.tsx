@@ -10,43 +10,43 @@ const Footer: React.FC = () => (
       width: '100%',
       py: 3,
       mt: 4,
-      backgroundColor: '#fae1db',
+      backgroundColor: '#ffff',
       borderTop: '1px solid #eee',
       textAlign: 'center'
     }}
   >
-    <Typography variant="body2" color="text.secondary">
-      © {new Date().getFullYear()} Hello Gassy'z — Votre fournisseur de pâtes. Tous droits réservés.
+    <Typography variant="body2" color="black">
+      © {new Date().getFullYear()} DIOUF TECH STORE — votre partenaire de technologie. Tous droits réservés.
     </Typography>
     <Box sx={{ mt: 1 }}>
-      <Typography variant="body2" color="text.secondary">
-        Contact : <Link href="tel:+221774093230" color="inherit" underline="hover">+221 77 409 32 30</Link> | 
-        Email : <Link href="mailto:hellogassy@gmail.com" color="inherit" underline="hover">hellogassy@gmail.com</Link>
+      <Typography variant="body2" color="black">
+        Contact : <Link href="tel:+221774093230" color="black"  underline="hover">+221 77 409 32 30</Link> | 
+        Email : <Link href="mailto:contact@electronicshop.com" color="black" underline="hover">contact@electronicshop.com</Link>
       </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" color="black">
         Adresse : Dakar, Sénégal
       </Typography>
     </Box>
     <Box sx={{ mt: 2 }}>
-      <Link href="/politique-confidentialite" color="inherit" underline="hover" sx={{ mx: 1 }}>
+      <Link href="/politique-confidentialite" color="black" underline="hover" sx={{ mx: 1 }}>
         Politique de confidentialité
       </Link>
       <span style={{ color: '#888' }}>|</span>
-      <Link href="/conditions-utilisation" color="inherit" underline="hover" sx={{ mx: 1 }}>
+      <Link href="/conditions-utilisation" color="black" underline="hover" sx={{ mx: 1 }}>
         Conditions d'utilisation
       </Link>
     </Box>
     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
-      <IconButton component="a" href="https://instagram.com/hellogassy" target="_blank" rel="noopener" aria-label="Instagram">
+      <IconButton component="a" href="https://instagram.com/electronicshop" target="_blank" rel="noopener" aria-label="Instagram">
         <img src="/icons/instagram.png" alt="Instagram" style={{ width: 32, height: 32 }} />
       </IconButton>
-      <IconButton component="a" href="https://facebook.com/hellogassy" target="_blank" rel="noopener" aria-label="Facebook">
+      <IconButton component="a" href="https://facebook.com/electronicshop" target="_blank" rel="noopener" aria-label="Facebook">
         <img src="/icons/facebook.png" alt="Facebook" style={{ width: 32, height: 32 }} />
       </IconButton>
-      <IconButton component="a" href="https://snapchat.com/add/hellogassy" target="_blank" rel="noopener" aria-label="Snapchat">
+      <IconButton component="a" href="https://snapchat.com/add/electronicshop" target="_blank" rel="noopener" aria-label="Snapchat">
         <img src="/icons/snapchat.png" alt="Snapchat" style={{ width: 32, height: 32 }} />
       </IconButton>
-      <IconButton component="a" href="https://tiktok.com/@hellogassy" target="_blank" rel="noopener" aria-label="TikTok">
+      <IconButton component="a" href="https://tiktok.com/@electronicshop" target="_blank" rel="noopener" aria-label="TikTok">
         <img src="/icons/tiktok.png" alt="TikTok" style={{ width: 32, height: 32 }} />
       </IconButton>
     </Box>

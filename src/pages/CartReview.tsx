@@ -22,7 +22,6 @@ import {
   CircularProgress,
   Dialog,
   DialogContent,
-  DialogActions,
   Fade
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
@@ -139,7 +138,7 @@ const CartReview: React.FC = () => {
       };
       
 
-      const response = await createOrder(orderData);
+      await createOrder(orderData);
       setShowSuccessDialog(true);
       
       setTimeout(() => {

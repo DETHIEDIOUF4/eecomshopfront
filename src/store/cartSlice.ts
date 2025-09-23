@@ -1,10 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CartState, CartItem, Product } from '../types';
 
-const initialState: CartState = {
-  items: [],
-  total: 0
+const loadPersistedCart = (): CartState => {
+  try {
+    const raw = localStorage.getItem('cart');
+    if (!raw) return { items: [], total: 0 };
+    return JSON.parse(raw) as CartState;
+  } catch {
+    return { items: [], total: 0 };
+  }
 };
+
+const persistCart = (state: CartState) => {
+  try {
+    localStorage.setItem('cart', JSON.stringify(state));
+  } catch {}
+};
+
+const initialState: CartState = loadPersistedCart();
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -18,13 +31,15 @@ const cartSlice = createSlice({
       const currentQuantity = existingItem ? existingItem.quantity : 0;
       const totalRequested = currentQuantity + requestedQuantity;
       
+      // Calcul du stock disponible (produits sans stock explicite => stock illimité)
+      const availableStock = (action.payload.product.stock ?? Number.MAX_SAFE_INTEGER);
       // Pour les produits ≤ 200 FCFA, vérifier le stock en lots de 25
       const stockCheck = action.payload.product.price <= 200 
-        ? totalRequested * 25 <= action.payload.product.stock
-        : totalRequested <= action.payload.product.stock;
+        ? totalRequested * 25 <= availableStock
+        : totalRequested <= availableStock;
       
       if (!stockCheck) {
-        throw new Error(`Stock insuffisant. Disponible: ${action.payload.product.stock} ${action.payload.product.price <= 200 ? 'pièces' : 'unités'}`);
+        return; // Ne pas ajouter si stock insuffisant
       }
       
       if (existingItem) {
@@ -42,6 +57,7 @@ const cartSlice = createSlice({
           return total + (item.product.price * item.quantity);
         }
       }, 0);
+      persistCart(state);
     },
     removeFromCart: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(item => item.product._id !== action.payload);
@@ -54,18 +70,20 @@ const cartSlice = createSlice({
           return total + (item.product.price * item.quantity);
         }
       }, 0);
+      persistCart(state);
     },
     updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
       const item = state.items.find(item => item.product._id === action.payload.productId);
       if (item) {
         // Vérifier le stock disponible
         const requestedQuantity = action.payload.quantity;
+        const availableStock = (item.product.stock ?? Number.MAX_SAFE_INTEGER);
         const stockCheck = item.product.price <= 200 
-          ? requestedQuantity * 25 <= item.product.stock
-          : requestedQuantity <= item.product.stock;
+          ? requestedQuantity * 25 <= availableStock
+          : requestedQuantity <= availableStock;
         
         if (!stockCheck) {
-          throw new Error(`Stock insuffisant. Disponible: ${item.product.stock} ${item.product.price <= 200 ? 'pièces' : 'unités'}`);
+          return; // Ne pas mettre à jour si stock insuffisant
         }
         
         item.quantity = action.payload.quantity;
@@ -78,11 +96,13 @@ const cartSlice = createSlice({
             return total + (item.product.price * item.quantity);
           }
         }, 0);
+        persistCart(state);
       }
     },
     clearCart: (state) => {
       state.items = [];
       state.total = 0;
+      persistCart(state);
     }
   }
 });

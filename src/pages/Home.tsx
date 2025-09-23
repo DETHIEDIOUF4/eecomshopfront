@@ -14,17 +14,21 @@ import {
   Rating
 } from '@mui/material';
 import { productService } from '../services/productService';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../store/cartSlice';
 import { Product } from '../types';
 import CategoryFilter from '../components/CategoryFilter';
+import Banner from '../components/Banner';
 import PriceFilter from '../components/PriceFilter';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
   const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
@@ -33,7 +37,11 @@ const Home: React.FC = () => {
         const response = await productService.getAllProducts();
         setProducts(response.data.products);
         setError(null);
-        setCategories(response.data.categories);
+        const catRaw = response.data.categories;
+        const catNames = Array.isArray(catRaw)
+          ? catRaw.map((c: any) => (typeof c === 'string' ? c : c?.name)).filter(Boolean)
+          : [];
+        setCategories(catNames as string[]);
       } catch (err) {
         setError('Erreur lors du chargement des produits');
         console.error('Erreur:', err);
@@ -72,8 +80,11 @@ const Home: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
+        <Banner />
+      </Box>
+      <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Nos Produits
+          Meilleurs produits électroniques
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
           <CategoryFilter
@@ -137,10 +148,10 @@ const Home: React.FC = () => {
                   fullWidth
                   variant="contained"
                   color="primary"
-                  onClick={() => navigate(`/product/${product._id}`)}
+                  onClick={() => dispatch(addToCart({ product, quantity: 1 }))}
                   disabled={product.stock === 0}
                 >
-                  Voir les détails
+                  Ajouter au panier
                 </Button>
               </Box>
             </Card>

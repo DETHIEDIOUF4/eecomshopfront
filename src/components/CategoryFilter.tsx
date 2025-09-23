@@ -2,13 +2,8 @@ import React from 'react';
 import { 
   Box, 
   Typography, 
-  FormControl, 
-  RadioGroup, 
-  FormControlLabel, 
-  Radio,
   Divider,
   List,
-  ListItem,
   ListItemButton,
   ListItemText,
   ListItemIcon,
@@ -17,9 +12,9 @@ import {
 } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import BakeryDiningIcon from '@mui/icons-material/BakeryDining';
-import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
+import SmartphoneIcon from '@mui/icons-material/Smartphone';
+import LaptopChromebookIcon from '@mui/icons-material/LaptopChromebook';
+import TvIcon from '@mui/icons-material/Tv';
 import CategoryIcon from '@mui/icons-material/Category';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import SortIcon from '@mui/icons-material/Sort';
@@ -43,7 +38,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
 }) => {
   const [open, setOpen] = React.useState(true);
   const [priceOpen, setPriceOpen] = React.useState(false);
-  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 10000]);
+  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 1000000]);
   const [sortOrder, setSortOrder] = React.useState<'asc' | 'desc'>('asc');
 
   const handleClick = () => {
@@ -71,13 +66,15 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   };
 
   const getCategoryIcon = (category: string) => {
-    switch (category.toLowerCase()) {
-      case 'beignets':
-        return <BakeryDiningIcon />;
-      case 'fatayas':
-        return <RestaurantIcon />;
-      case 'quiches':
-        return <LocalPizzaIcon />;
+    const key = typeof category === 'string' ? category.toLowerCase() : '';
+    switch (key) {
+      case 'smartphones':
+        return <SmartphoneIcon />;
+      case 'ordinateurs':
+        return <LaptopChromebookIcon />;
+      case 'téléviseurs':
+      case 'televiseurs':
+        return <TvIcon />;
       default:
         return <CategoryIcon />;
     }
@@ -110,9 +107,9 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               sx={{
                 pl: 2,
                 '&.Mui-selected': {
-                  backgroundColor: 'rgba(227, 30, 36, 0.1)',
+                  backgroundColor: 'rgba(14, 165, 233, 0.12)',
                   '&:hover': {
-                    backgroundColor: 'rgba(227, 30, 36, 0.2)',
+                    backgroundColor: 'rgba(14, 165, 233, 0.2)',
                   },
                 },
               }}
@@ -135,19 +132,19 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                 } 
               />
             </ListItemButton>
-            {categories.map((category) => (
+            {categories.filter(Boolean).map((category) => (
               <ListItemButton
                 key={category}
                 selected={selectedCategory === category}
                 onClick={() => onCategoryChange(category)}
                 sx={{
                   pl: 2,
-                  '&.Mui-selected': {
-                    backgroundColor: 'rgba(227, 30, 36, 0.1)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(227, 30, 36, 0.2)',
-                    },
+                '&.Mui-selected': {
+                  backgroundColor: 'rgba(14, 165, 233, 0.12)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(14, 165, 233, 0.2)',
                   },
+                },
                 }}
               >
                 <ListItemIcon>
@@ -214,8 +211,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               onChange={handlePriceRangeChange}
               valueLabelDisplay="auto"
               min={0}
-              max={5000}
-              step={500}
+              max={1000000}
+              step={10000}
               valueLabelFormat={(value) => `${value.toLocaleString()} FCFA`}
               sx={{ color: 'primary.main' }}
             />

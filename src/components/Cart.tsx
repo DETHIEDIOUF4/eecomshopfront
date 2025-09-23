@@ -19,7 +19,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { removeFromCart } from '../store/cartSlice';
-import { CartState } from '../types';
+import { RootState } from '../store';
 
 interface CartProps {
   open: boolean;
@@ -29,7 +29,7 @@ interface CartProps {
 const Cart: React.FC<CartProps> = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { items, total } = useSelector((state: { cart: CartState }) => state.cart);
+  const { items, total } = useSelector((state: RootState) => state.cart);
 
   const handleCheckout = () => {
     onClose();

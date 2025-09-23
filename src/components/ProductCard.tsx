@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Card,
   CardMedia,
@@ -6,18 +6,14 @@ import {
   Typography,
   Button,
   Box,
-  IconButton,
   useTheme,
-  useMediaQuery,
-  Alert,
   Chip
 } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import InfoIcon from '@mui/icons-material/Info';
 import { Product } from '../types';
-import ImageGallery from 'react-image-gallery';
-import "react-image-gallery/styles/css/image-gallery.css";
-import { Color } from 'antd/es/color-picker';
+ 
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../store/cartSlice';
 
 interface ProductCardProps {
   product: Product;
@@ -26,8 +22,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const dispatch = useDispatch();
 
   // Fonction pour déterminer le statut du stock
   const getStockStatus = () => {
@@ -45,14 +40,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
     onViewDetails(product);
   };
 
-  const handleInfoClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    onViewDetails(product);
-  };
-
   const handleAddToCartClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    onViewDetails(product);
+    try {
+      dispatch(addToCart({ product, quantity: 1 }));
+    } catch (e) {
+      // Optionally surface error
+    }
   };
 
   return (
@@ -62,9 +56,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
         display: 'flex',
         flexDirection: 'column',
         cursor: 'pointer',
-        transition: 'transform 0.2s',
+        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
+        border: '1px solid rgba(255,255,255,0.06)',
         '&:hover': {
-          transform: 'scale(1.02)',
+          transform: 'translateY(-2px)',
+          boxShadow: '0 12px 30px rgba(14,165,233,0.15)'
         }
       }}
       onClick={handleCardClick}
@@ -75,7 +72,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
           height="200"
           image={product.images[0]}
           alt={product.name}
-          sx={{ objectFit: 'cover' }}
+          sx={{ objectFit: 'cover', filter: 'saturate(1.05)' }}
         />
         {stockStatus && (
           <Chip
@@ -93,9 +90,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
         )}
       </Box>
       <CardContent sx={{ flexGrow: 1 }}>
-        <Typography gutterBottom variant="h6" component="div">
+        <Typography gutterBottom variant="h6" component="div" sx={{ color: 'white' }}>
           {product.name}
         </Typography>
+        {(product.brand || product.modelName) && (
+          <Box sx={{ mb: 1 }}>
+            <Chip size="small" label={`${product.brand ?? ''} ${product.modelName ?? ''}`.trim()} />
+          </Box>
+        )}
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {product.description}
         </Typography>

@@ -10,12 +10,10 @@ import {
   Tab,
   IconButton,
   InputAdornment,
-  Alert,
-  useTheme,
-  useMediaQuery
+  useTheme
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+ 
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -46,9 +44,8 @@ function TabPanel(props: TabPanelProps) {
 const Auth: React.FC = () => {
   const [tab, setTab] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // États pour le formulaire de connexion
   const [loginData, setLoginData] = useState({

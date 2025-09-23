@@ -49,10 +49,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, open, onClose })
   };
 
   const handleAddToCart = () => {
-    dispatch(addToCart({
-      product,
-      quantity
-    }));
+    dispatch(addToCart({ product, quantity }));
     onClose();
   };
 
@@ -101,13 +98,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, open, onClose })
 
               <Box sx={{ mb: 2 }}>
                 <Typography variant="h6" gutterBottom>
-                  Ingrédients
+                  Caractéristiques
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {product.ingredients?.map((ingredient, index) => (
+                  {product.features?.map((feature, index) => (
                     <Chip
                       key={index}
-                      label={ingredient}
+                      label={feature}
                       color="primary"
                       variant="outlined"
                     />
@@ -119,16 +116,29 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, open, onClose })
 
               
 
-              {product.preparationTime && (
+              {(product.brand || product.modelName) && (
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="h6" gutterBottom>
-                    Temps de préparation
+                    Modèle
                   </Typography>
                   <Chip
-                    label={product.preparationTime}
+                    label={`${product.brand ?? ''} ${product.modelName ?? ''}`.trim()}
                     color="primary"
                     variant="filled"
                   />
+                </Box>
+              )}
+
+              {product.specs && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Spécifications
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {Object.entries(product.specs).map(([key, value]) => (
+                      <Chip key={key} label={`${key}: ${value}`} variant="outlined" />
+                    ))}
+                  </Box>
                 </Box>
               )}
 
@@ -137,9 +147,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, open, onClose })
                   <IconButton 
                     onClick={() => handleQuantityChange(quantity - 1)}
                     sx={{ 
-                      backgroundColor: 'rgba(227, 30, 36, 0.1)',
+                      backgroundColor: 'rgba(14, 165, 233, 0.12)',
                       '&:hover': {
-                        backgroundColor: 'rgba(227, 30, 36, 0.2)',
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
                       }
                     }}
                   >
@@ -155,9 +165,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, open, onClose })
                   <IconButton 
                     onClick={() => handleQuantityChange(quantity + 1)}
                     sx={{ 
-                      backgroundColor: 'rgba(227, 30, 36, 0.1)',
+                      backgroundColor: 'rgba(14, 165, 233, 0.12)',
                       '&:hover': {
-                        backgroundColor: 'rgba(227, 30, 36, 0.2)',
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
                       }
                     }}
                   >

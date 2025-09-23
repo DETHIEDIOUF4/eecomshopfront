@@ -4,10 +4,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const images = [
-  '/images/banner.png', // première image
-  '/images/banner.png',
-  // '/images/banner45.png', // à ajouter dans public/images/
-  // '/images/banner343.png', // à ajouter dans public/images/
+  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1600',
+  'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1600',
 ];
 
 const Banner: React.FC = () => {

@@ -10,7 +10,7 @@ const UsersList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('https://hellogassy-backend.onrender.com/api/users', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/users`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
@@ -32,7 +32,7 @@ const UsersList = () => {
   const handleDelete = async (userId: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
       try {
-        await axios.delete(`https://hellogassy-backend.onrender.com/api/users/${userId}`, {
+        await axios.delete(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }

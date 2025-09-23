@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { API_URL } from '../config';
-import { productService } from './productService';
 import { Product } from '../types';
 
 const getAuthToken = () => {

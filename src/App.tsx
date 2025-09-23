@@ -36,7 +36,7 @@ import ConditionsUtilisation from './pages/ConditionsUtilisation';
 const HomePage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
   const [showPromotions, setShowPromotions] = useState(false);
   const [priceSort, setPriceSort] = useState<'asc' | 'desc'>('asc');
   const [products, setProducts] = useState<Product[]>([]);
@@ -123,7 +123,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <Layout showMenuButton onMenuClick={() => setDrawerOpen(!drawerOpen)}>
+    <>
       <Drawer
         variant={isMobile ? "temporary" : "permanent"}
         open={drawerOpen}
@@ -135,7 +135,7 @@ const HomePage: React.FC = () => {
             width: drawerWidth,
             boxSizing: 'border-box',
             marginTop: '64px',
-            backgroundColor: 'white',
+            backgroundColor: '#0f172a',
             borderRight: 'none',
             boxShadow: 2
           },
@@ -149,6 +149,7 @@ const HomePage: React.FC = () => {
           onPromotionFilter={handlePromotionFilter}
           onPriceSort={handlePriceSort}
         />
+        
       </Drawer>
 
       <Box
@@ -193,7 +194,7 @@ const HomePage: React.FC = () => {
                   padding: '10px',
                   fontSize: '16px',
                   borderRadius: '4px',
-                  border: '2px solid #e53935',
+                  border: '2px solid #0ea5e9',
                   outline: 'none',
                   boxSizing: 'border-box',
                   marginBottom: '16px'
@@ -229,7 +230,7 @@ const HomePage: React.FC = () => {
           </Paper>
         </Container>
       </Box>
-    </Layout>
+    </>
   );
 };
 

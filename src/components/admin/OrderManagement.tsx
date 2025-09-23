@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Modal, message, Input, Select, DatePicker } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Table, Tag, Button, message, Input, Select, DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { getAllOrders, deliverOrder, markOrderAsPaid, Order } from '../../services/orderService';
 import { generateOrderPDF } from '../../services/pdfService';
@@ -14,11 +14,7 @@ const OrderManagement: React.FC = () => {
     const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs]>([dayjs().startOf('day'), dayjs().endOf('day')]);
     const [selectedPeriod, setSelectedPeriod] = useState<string>('today');
 
-    useEffect(() => {
-        fetchOrders();
-    }, [dateRange]);
-
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         try {
             const data = await getAllOrders();
             
@@ -36,7 +32,13 @@ const OrderManagement: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [dateRange]);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
+
+    
 
     const handleMarkAsDelivered = async (orderId: string) => {
         try {
@@ -138,7 +140,7 @@ const OrderManagement: React.FC = () => {
             dataIndex: 'isPaid',
             key: 'isPaid',
             render: (isPaid: boolean) => (
-                <Tag color={isPaid ? 'green' : 'red'}>
+                <Tag color={isPaid ? 'green' : 'volcano'}>
                     {isPaid ? 'Payé' : 'Non payé'}
                 </Tag>
             ),
@@ -262,7 +264,7 @@ const OrderManagement: React.FC = () => {
                     expandedRowRender: (record) => (
                         <div>
                             <h4>Détails de la commande</h4>
-                            <p>Adresse de livraison: { record.shippingPrice == 0 ?  "Retrait Magasin" :record.shippingAddress.city  }</p>
+                            <p>Adresse de livraison: { record.shippingPrice === 0 ?  "Retrait Magasin" :record.shippingAddress.city  }</p>
                             {/* <p>Rue: { record.shippingPrice == 0 ?  "" :record.shippingAddress.postalCode  }</p> */}
 
                             <p>Méthode de paiement: {record.paymentMethod}</p>

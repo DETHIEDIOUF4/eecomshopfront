@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { getAllOrders, deliverOrder, Order } from './orderService';
+import { Order } from './orderService';
 
 // Fonction pour formater les nombres sans espaces
 const formatNumber = (num: number) => {
@@ -98,7 +98,7 @@ export const generateOrderPDF = (order: Order) => {
             body: tableData,
             theme: 'grid',
             headStyles: {
-                fillColor: [220, 53, 69], // Rouge
+                fillColor: [14, 165, 233], // Bleu tech
                 textColor: 255,
                 fontStyle: 'bold',
                 fontSize: 8

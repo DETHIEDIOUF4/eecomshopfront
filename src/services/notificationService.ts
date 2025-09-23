@@ -74,7 +74,7 @@ class NotificationService {
 
     try {
       // Utiliser Server-Sent Events pour écouter les nouvelles commandes
-      this.eventSource = new EventSource(`${process.env.REACT_APP_API_URL || 'https://hellogassy-backend.onrender.com/api'}/orders/notifications`);
+      this.eventSource = new EventSource(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/orders/notifications`);
       
       this.eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);

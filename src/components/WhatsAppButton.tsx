@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const WHATSAPP_URL = "https://wa.me/221774093230"; // Remplace par ton numéro
+const WHATSAPP_URL = "https://wa.me/221788797628"; // Remplace par ton numéro
 
 const WhatsAppButton: React.FC = () => {
   const [open, setOpen] = useState(false);

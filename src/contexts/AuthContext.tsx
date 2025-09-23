@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (token) {
       // axios.get('https://hellogassy-backend.onrender.com/api/users/profile', {
       
-      axios.get('https://hellogassy-backend.onrender.com/api/users/profile', {
+      axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/users/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => setUser(response.data))
@@ -37,21 +37,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post('https://hellogassy-backend.onrender.com/api/users/login', { 
+      const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/users/login`, { 
         email, 
         password 
       });
-      console.log('Login response:', response.data);
-      
-      if (response.data.token != "") {
-        console.log("cool");
-        localStorage.setItem('token', response.data.data.token);
-        console.log(response.data.data);
-        setUser(response.data.data);
-        console.log(user);
-      } else {
+      const userData = response.data?.data;
+      if (!userData || !userData.token) {
         throw new Error('Réponse invalide du serveur');
       }
+      localStorage.setItem('token', userData.token);
+      setUser({
+        _id: userData._id,
+        name: `${userData.firstName ?? ''} ${userData.lastName ?? ''}`.trim(),
+        email: userData.email,
+        role: userData.role
+      });
     } catch (error: any) {
       console.error('Login error:', error.response?.data || error.message);
       throw new Error(error.response?.data?.message || 'Erreur de connexion');

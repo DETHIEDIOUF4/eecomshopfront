@@ -15,7 +15,7 @@ const ProductManagement: React.FC = () => {
     const [editingProduct, setEditingProduct] = useState<any>(null);
     const [form] = Form.useForm();
     const [fileList, setFileList] = useState<any[]>([]);
-    const [uploading, setUploading] = useState(false);
+    
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
 
@@ -53,15 +53,10 @@ const ProductManagement: React.FC = () => {
 
     const handleEditProduct = (product: any) => {
         setEditingProduct(product);
-        const nutritional = product?.nutritionalInfo || {};
         form.setFieldsValue({
             ...product,
-            nutritionalInfo: Object.keys(nutritional).length ? {
-                calories: nutritional.calories,
-                proteins: nutritional.proteins,
-                carbohydrates: nutritional.carbohydrates,
-                fats: nutritional.fats,
-            } : undefined,
+            features: product.features || [],
+            specsText: product.specs ? Object.entries(product.specs).map(([k,v]: [string, any]) => `${k}=${v}`).join('\n') : ''
         });
         setFileList(product.images.map((url: string) => ({
             uid: url,
@@ -85,22 +80,25 @@ const ProductManagement: React.FC = () => {
     const handleModalOk = async () => {
         try {
             const values = await form.validateFields();
-            const nutritional = values.nutritionalInfo || {};
-            const hasNutritional = ['calories','proteins','carbohydrates','fats'].some(k => nutritional?.[k] !== undefined && nutritional?.[k] !== null && nutritional?.[k] !== '');
+            // Transform specs text area into object
+            const specs: Record<string, string> = {};
+            if (values.specsText) {
+                String(values.specsText).split('\n').forEach((line: string) => {
+                    const idx = line.indexOf('=');
+                    if (idx > 0) {
+                        const key = line.slice(0, idx).trim();
+                        const val = line.slice(idx+1).trim();
+                        if (key) specs[key] = val;
+                    }
+                });
+            }
             const productData: any = {
                 ...values,
                 images: fileList.map(file => file.url || file.response?.url)
             };
-            if (hasNutritional) {
-                productData.nutritionalInfo = {
-                    calories: nutritional.calories,
-                    proteins: nutritional.proteins,
-                    carbohydrates: nutritional.carbohydrates,
-                    fats: nutritional.fats,
-                };
-            } else {
-                delete productData.nutritionalInfo;
-            }
+            // Cleanup UI-only fields
+            delete productData.specsText;
+            if (Object.keys(specs).length) productData.specs = specs;
 
             if (editingProduct) {
                 await productService.updateProduct(editingProduct._id, productData);
@@ -118,14 +116,14 @@ const ProductManagement: React.FC = () => {
 
     const handleUpload = async (options: any) => {
         const { file, onSuccess, onError } = options;
-        setUploading(true);
+        
         
         const formData = new FormData();
         formData.append('image', file);
         console.log("formData");
         console.log(formData);
         try {
-            const response = await axios.post('https://hellogassy-backend.onrender.com/api/upload', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -143,7 +141,6 @@ const ProductManagement: React.FC = () => {
             onError('Erreur lors de l\'upload de l\'image');
             message.error('Erreur lors de l\'upload de l\'image');
         } finally {
-            setUploading(false);
         }
     };
 
@@ -275,58 +272,41 @@ const ProductManagement: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item
-                        name="ingredients"
-                        label="Ingrédients"
-                        rules={[{ required: true, message: 'Veuillez entrer les ingrédients' }]}
-                    >
-                        <Select mode="tags" style={{ width: '100%' }} placeholder="Ajouter des ingrédients" />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="preparationTime"
-                        label="Temps de préparation"
-                        rules={[{ required: true, message: 'Veuillez entrer le temps de préparation' }]}
+                        name="brand"
+                        label="Marque"
+                        rules={[{ required: true, message: 'Veuillez entrer la marque' }]}
                     >
                         <Input />
                     </Form.Item>
 
                     <Form.Item
-                        name="allergens"
-                        label="Allergènes"
+                        name="modelName"
+                        label="Modèle"
+                        rules={[{ required: true, message: 'Veuillez entrer le modèle' }]}
                     >
-                        <Select mode="tags" style={{ width: '100%' }} placeholder="Ajouter des allergènes" />
+                        <Input />
                     </Form.Item>
 
                     <Form.Item
-                        name={['nutritionalInfo', 'calories']}
-                        label="Calories"
-                        rules={[]}
+                        name="features"
+                        label="Caractéristiques (tags)"
+                    >
+                        <Select mode="tags" style={{ width: '100%' }} placeholder="Ajouter des caractéristiques" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="warrantyMonths"
+                        label="Garantie (mois)"
                     >
                         <InputNumber min={0} style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Form.Item
-                        name={['nutritionalInfo', 'proteins']}
-                        label="Protéines (g)"
-                        rules={[]}
+                        name="specsText"
+                        label="Spécifications (clé=valeur par ligne)"
+                        tooltip="Exemple: RAM=16 Go\nStockage=512 Go"
                     >
-                        <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
-                    </Form.Item>
-
-                    <Form.Item
-                        name={['nutritionalInfo', 'carbohydrates']}
-                        label="Glucides (g)"
-                        rules={[]}
-                    >
-                        <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
-                    </Form.Item>
-
-                    <Form.Item
-                        name={['nutritionalInfo', 'fats']}
-                        label="Lipides (g)"
-                        rules={[]}
-                    >
-                        <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+                        <TextArea rows={4} placeholder={'RAM=16 Go\nStockage=512 Go'} />
                     </Form.Item>
 
                     <Form.Item

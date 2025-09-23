@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Container } from '@mui/material';
+import { Typography, Container } from '@mui/material';
 import Layout from '../components/Layout';
 
 const PolitiqueConfidentialite: React.FC = () => (
@@ -36,7 +36,7 @@ const PolitiqueConfidentialite: React.FC = () => (
         Nous mettons en œuvre des mesures de sécurité pour protéger vos données contre tout accès non autorisé.
       </Typography>
       <Typography variant="body1" paragraph sx={{ mt: 4 }}>
-        Pour toute question concernant notre politique de confidentialité, contactez-nous à <a href="mailto:hellogassy@gmail.com">hellogassy@gmail.com</a>.
+        Pour toute question concernant notre politique de confidentialité, contactez-nous à <a href="mailto:contact@electronicshop.com">contact@electronicshop.com</a>.
       </Typography>
     </Container>
   </Layout>

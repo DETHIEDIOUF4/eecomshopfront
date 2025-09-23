@@ -1,15 +1,11 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { RootState } from '../../store';
 import {
   Box,
   Typography,
   Grid,
-  Divider,
   IconButton,
-  Button,
-  ButtonGroup,
   Paper,
   TextField,
   useTheme,
@@ -20,11 +16,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { removeFromCart, updateQuantity } from '../../store/cartSlice';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { CartItem as CartItemType } from '../../types';
+ 
 
 const CartItems: React.FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  
   const { items, total } = useSelector((state: RootState) => state.cart);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -45,9 +41,7 @@ const CartItems: React.FC = () => {
     }
   };
 
-  const handleCheckout = () => {
-    navigate('/checkout/review');
-  };
+  
 
   return (
     <Box>

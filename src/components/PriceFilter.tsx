@@ -19,9 +19,9 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ priceRange, onPriceChange }) 
         onChange={handleChange}
         valueLabelDisplay="auto"
         min={0}
-        max={10000}
-        step={100}
-        valueLabelFormat={(value) => `${value} FCFA`}
+        max={1000000}
+        step={10000}
+        valueLabelFormat={(value) => `${value.toLocaleString()} FCFA`}
       />
     </Box>
   );
