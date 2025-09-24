@@ -20,8 +20,8 @@ const Footer: React.FC = () => (
     </Typography>
     <Box sx={{ mt: 1 }}>
       <Typography variant="body2" color="black">
-        Contact : <Link href="tel:+221774093230" color="black"  underline="hover">+221 77 409 32 30</Link> | 
-        Email : <Link href="mailto:contact@electronicshop.com" color="black" underline="hover">contact@electronicshop.com</Link>
+        Contact : <Link href="tel:+221788797628" color="black"  underline="hover">221 78 879 76 28</Link> | 
+        Email : <Link href="mailto:contact@diouftechstor.com" color="black" underline="hover">contact@electronicshop.com</Link>
       </Typography>
       <Typography variant="body2" color="black">
         Adresse : Dakar, Sénégal

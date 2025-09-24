@@ -90,12 +90,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
         )}
       </Box>
       <CardContent sx={{ flexGrow: 1 }}>
-        <Typography gutterBottom variant="h6" component="div" sx={{ color: 'white' }}>
+        <Typography gutterBottom variant="h6" component="div" sx={{ color: 'primary.main' }}>
           {product.name}
         </Typography>
         {(product.brand || product.modelName) && (
-          <Box sx={{ mb: 1 }}>
-            <Chip size="small" label={`${product.brand ?? ''} ${product.modelName ?? ''}`.trim()} />
+          <Box sx={{ mb: 1  } }>
+            <Chip size="small" sx={{ color: 'primary.main' }} label={`${product.brand ?? ''} ${product.modelName ?? ''}`.trim()} />
           </Box>
         )}
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
