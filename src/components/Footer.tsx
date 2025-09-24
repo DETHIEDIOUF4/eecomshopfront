@@ -50,6 +50,9 @@ const Footer: React.FC = () => (
         <img src="/icons/tiktok.png" alt="TikTok" style={{ width: 32, height: 32 }} />
       </IconButton>
     </Box>
+    <Typography variant="body2" color="black">
+      © {new Date().getFullYear()} DDEV. Tous droits réservés.
+    </Typography>
   
   </Box>
 );
