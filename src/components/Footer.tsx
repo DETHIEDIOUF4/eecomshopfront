@@ -21,7 +21,7 @@ const Footer: React.FC = () => (
     <Box sx={{ mt: 1 }}>
       <Typography variant="body2" color="black">
         Contact : <Link href="tel:+221788797628" color="black"  underline="hover">221 78 879 76 28</Link> | 
-        Email : <Link href="mailto:contact@diouftechstor.com" color="black" underline="hover">contact@electronicshop.com</Link>
+        Email : <Link href="mailto:contact@diouftechstore.com" color="black" underline="hover">contact@diouftechstore.com</Link>
       </Typography>
       <Typography variant="body2" color="black">
         Adresse : Dakar, Sénégal
@@ -37,16 +37,16 @@ const Footer: React.FC = () => (
       </Link>
     </Box>
     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
-      <IconButton component="a" href="https://instagram.com/electronicshop" target="_blank" rel="noopener" aria-label="Instagram">
+      <IconButton component="a" href="https://instagram.com/diouftechstore" target="_blank" rel="noopener" aria-label="Instagram">
         <img src="/icons/instagram.png" alt="Instagram" style={{ width: 32, height: 32 }} />
       </IconButton>
-      <IconButton component="a" href="https://facebook.com/electronicshop" target="_blank" rel="noopener" aria-label="Facebook">
+      <IconButton component="a" href="https://facebook.com/diouftechstore" target="_blank" rel="noopener" aria-label="Facebook">
         <img src="/icons/facebook.png" alt="Facebook" style={{ width: 32, height: 32 }} />
       </IconButton>
-      <IconButton component="a" href="https://snapchat.com/add/electronicshop" target="_blank" rel="noopener" aria-label="Snapchat">
+      <IconButton component="a" href="https://snapchat.com/add/diouftechstore" target="_blank" rel="noopener" aria-label="Snapchat">
         <img src="/icons/snapchat.png" alt="Snapchat" style={{ width: 32, height: 32 }} />
       </IconButton>
-      <IconButton component="a" href="https://tiktok.com/@electronicshop" target="_blank" rel="noopener" aria-label="TikTok">
+      <IconButton component="a" href="https://tiktok.com/@diouftechstore" target="_blank" rel="noopener" aria-label="TikTok">
         <img src="/icons/tiktok.png" alt="TikTok" style={{ width: 32, height: 32 }} />
       </IconButton>
     </Box>

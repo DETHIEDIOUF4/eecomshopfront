@@ -4,8 +4,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const images = [
-  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1600',
-  'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1600',
+  // 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1600',
+  // 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1600',
+   'https://res.cloudinary.com/dxleke2ws/image/upload/v1758742721/electronicshop/1758742720760-diouftechstore.png.png',
+  'https://res.cloudinary.com/dxleke2ws/image/upload/v1758742721/electronicshop/1758742720760-diouftechstore.png.png'
+
 ];
 
 const Banner: React.FC = () => {
@@ -21,14 +24,14 @@ const Banner: React.FC = () => {
   };
 
   return (
-    <div style={{ width: '100%', margin: '0 auto' }}>
+    <div style={{ width: '100%',  margin: '0 auto' }}>
       <Slider {...settings}>
         {images.map((src, idx) => (
           <div key={idx}>
             <img
               src={src}
               alt={`Banner ${idx + 1}`}
-              style={{ width: '100%', maxHeight: 500, objectFit: 'cover', borderRadius: 12 }}
+              style={{ width: '100%', maxHeight: 400, objectFit: 'cover', borderRadius: 12 }}
             />
           </div>
         ))}
