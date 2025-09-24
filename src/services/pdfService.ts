@@ -14,7 +14,7 @@ export const generateOrderPDF = (order: Order) => {
     const createInvoice = (startX: number, startY: number, width: number, height: number) => {
         // Ajouter le logo en haut à droite
         try {
-            doc.addImage('/logo.png', 'PNG', startX + width - 25, startY + 2, 20, 10);
+            doc.addImage('/logo.jpg', 'PNG', startX + width - 25, startY + 2, 20, 10);
         } catch (error) {
             console.log('Logo non trouvé, utilisation du texte uniquement');
         }
