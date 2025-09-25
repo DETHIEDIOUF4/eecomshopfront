@@ -17,7 +17,7 @@ import { addToCart } from '../store/cartSlice';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 // Ton numéro WhatsApp du commercial (au format international sans + ni 00)
-const WHATSAPP_NUMBER = "221781541444"; // exemple Sénégal
+const WHATSAPP_NUMBER = "221787976228"; // exemple Sénégal
 
 interface ProductCardProps {
   product: Product;
