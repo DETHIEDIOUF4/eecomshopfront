@@ -64,11 +64,9 @@ const CartReview: React.FC = () => {
   });
 
   const handleNext = () => {
-    if (activeStep === steps.length - 1) {
+    
       handlePlaceOrder();
-    } else {
-      setActiveStep((prevStep) => prevStep + 1);
-    }
+    
   };
 
   const handleBack = () => {
@@ -94,19 +92,19 @@ const CartReview: React.FC = () => {
   };
 
   const validateStep = () => {
-    switch (activeStep) {
-      case 0:
-        return items.length > 0;
-      case 1:
-        return Object.values(personalInfo).every(value => value.trim() !== '');
-      case 2:
-        if (deliveryMethod === 'delivery') {
-          return Object.values(deliveryAddress).every(value => value.trim() !== '');
-        }
-        return true;
-      default:
-        return true;
-    }
+    // switch (activeStep) {
+    //   case 0:
+    //     return items.length > 0;
+    //   case 1:
+    //     return Object.values(personalInfo).every(value => value.trim() !== '');
+    //   case 2:
+    //     if (deliveryMethod === 'delivery') {
+    //       return Object.values(deliveryAddress).every(value => value.trim() !== '');
+    //     }
+    //     return true;
+    //   default:
+    //     return true;
+    // }
   };
 
   const handlePlaceOrder = async () => {
@@ -158,15 +156,14 @@ const CartReview: React.FC = () => {
     switch (step) {
       case 0:
         return (
-          <Box>
+         <>
+         {/* <Box>
             <Typography variant="h6" gutterBottom>
               Articles dans votre panier
             </Typography>
             <CartItems />
-          </Box>
-        );
-      case 1:
-        return (
+          </Box> */}
+      
           <Box>
             <Typography variant="h6" gutterBottom>
               Vos informations personnelles
@@ -211,9 +208,9 @@ const CartReview: React.FC = () => {
               </Grid>
             </Grid>
           </Box>
-        );
-      case 2:
-        return (
+          
+ 
+ 
           <Box>
             <Typography variant="h6" gutterBottom>
               Mode de livraison
@@ -270,9 +267,6 @@ const CartReview: React.FC = () => {
               </Box>
             )}
           </Box>
-        );
-      case 3:
-        return (
           <Box>
             <Typography variant="h6" gutterBottom>
               Récapitulatif de votre commande
@@ -344,7 +338,8 @@ const CartReview: React.FC = () => {
               </Grid>
             </Grid>
           </Box>
-        );
+          </>
+          );
       default:
         return 'Unknown step';
     }
@@ -370,7 +365,7 @@ const CartReview: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stepper
+      {/* <Stepper
         activeStep={activeStep}
         alternativeLabel={!isMobile}
         orientation={isMobile ? 'vertical' : 'horizontal'}
@@ -381,7 +376,7 @@ const CartReview: React.FC = () => {
             <StepLabel>{label}</StepLabel>
           </Step>
         ))}
-      </Stepper>
+      </Stepper> */}
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -403,7 +398,7 @@ const CartReview: React.FC = () => {
             variant="contained"
             color="primary"
             onClick={handleNext}
-            disabled={!validateStep() || isLoading}
+            disabled={false }
           >
             {isLoading ? (
               <CircularProgress size={24} color="inherit" />
