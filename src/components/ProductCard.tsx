@@ -14,6 +14,10 @@ import { Product } from '../types';
  
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+
+// Ton numéro WhatsApp du commercial (au format international sans + ni 00)
+const WHATSAPP_NUMBER = "221781541444"; // exemple Sénégal
 
 interface ProductCardProps {
   product: Product;
@@ -120,7 +124,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => 
           >
             {product.stock === 0 ? 'Rupture' : 'Ajouter'}
           </Button>
+          <Button
+                
+                variant="outlined"
+                color="success"
+                startIcon={<WhatsAppIcon />}
+                onClick={() => {
+                  const message = `Bonjour, je suis intéressé par ce produit : 
+                  - *${product.name}*
+                  - Prix : ${product.price.toLocaleString('fr-FR')} FCFA
+                  - Description : ${product.description}
+                  📸 Image : ${product.images[0]}`;
+                  
+                            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+                            window.open(url, "_blank");
+                }}
+              >
+              </Button>
+        
         </Box>
+      
       </CardContent>
     </Card>
   );

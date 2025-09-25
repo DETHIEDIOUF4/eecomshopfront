@@ -20,6 +20,10 @@ import { Product } from '../types';
 import CategoryFilter from '../components/CategoryFilter';
 import Banner from '../components/Banner';
 import PriceFilter from '../components/PriceFilter';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+
+// Ton numéro WhatsApp du commercial (au format international sans + ni 00)
+const WHATSAPP_NUMBER = "221770000000"; // exemple Sénégal
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -102,60 +106,67 @@ const Home: React.FC = () => {
       <Grid container spacing={4}>
         {filteredProducts.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product._id}>
-            <Card
-              sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.02)',
-                  boxShadow: 6
-                }
-              }}
-            >
-              <CardMedia
-                component="img"
-                height="200"
-                image={product.images[0]}
-                alt={product.name}
-                sx={{ objectFit: 'cover' }}
-              />
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography gutterBottom variant="h6" component="h2">
-                  {product.name}
+          <Card
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              transition: 'transform 0.2s',
+              '&:hover': {
+                transform: 'scale(1.02)',
+                boxShadow: 6
+              }
+            }}
+          >
+            <CardMedia
+              component="img"
+              height="200"
+              image={product.images[0]}
+              alt={product.name}
+              sx={{ objectFit: 'cover' }}
+            />
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography gutterBottom variant="h6" component="h2">
+                {product.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                {product.description}
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <Rating value={product.rating} readOnly precision={0.5} size="small" />
+                <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                  ({product.numReviews})
                 </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {product.description}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Rating value={product.rating} readOnly precision={0.5} size="small" />
-                  <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                    ({product.numReviews})
-                  </Typography>
-                </Box>
-                <Typography variant="h6" color="primary">
-                  {product.price.toLocaleString('fr-FR')} FCFA
-                </Typography>
-                {product.stock === 0 && (
-                  <Typography variant="body2" color="error" sx={{ mt: 1 }}>
-                    Rupture de stock
-                  </Typography>
-                )}
-              </CardContent>
-              <Box sx={{ p: 2 }}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  onClick={() => dispatch(addToCart({ product, quantity: 1 }))}
-                  disabled={product.stock === 0}
-                >
-                  Ajouter au panier
-                </Button>
               </Box>
-            </Card>
-          </Grid>
+              <Typography variant="h6" color="primary">
+                {product.price.toLocaleString('fr-FR')} FCFA
+              </Typography>
+              {product.stock === 0 && (
+                <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                  Rupture de stock
+                </Typography>
+              )}
+            </CardContent>
+        
+            <Box sx={{ p: 2, display: 'flex', gap: 1 }}>
+              {/* Bouton Ajouter au panier */}
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={() => dispatch(addToCart({ product, quantity: 1 }))}
+                disabled={product.stock === 0}
+              >
+                Ajouter au panier
+              </Button>
+             
+              
+        
+           
+            
+            </Box>
+          </Card>
+        </Grid>
         ))}
       </Grid>
     </Container>
